@@ -1,0 +1,150 @@
+{
+  "slugs": [
+    "finance-companion",
+    "travel-companion",
+    "fitness-journal",
+    "productivity-tracker",
+    "gaming-companion",
+    "music-companion",
+    "crypto-reader",
+    "travel-explorer",
+    "art-tracker",
+    "health-reader",
+    "cooking-reader",
+    "music-collector",
+    "gaming-dashboard",
+    "reading-coach",
+    "education-tracker",
+    "art-explorer",
+    "fitness-companion",
+    "music-journal",
+    "health-analyzer",
+    "recipe-explorer",
+    "mythology-travel-planner",
+    "heritage-speak"
+  ],
+  "domains": [
+    "fitness",
+    "productivity",
+    "gaming",
+    "music",
+    "crypto",
+    "travel",
+    "art",
+    "health",
+    "cooking",
+    "music",
+    "gaming",
+    "reading",
+    "education",
+    "art",
+    "fitness",
+    "music",
+    "health",
+    "astronomy",
+    "travel",
+    "culture"
+  ],
+  "lastN": [
+    {
+      "name": "fitness-journal",
+      "domain": "fitness",
+      "ts": "2026-02-23T06:01:21.091Z"
+    },
+    {
+      "name": "productivity-tracker",
+      "domain": "productivity",
+      "ts": "2026-02-23T06:01:56.249Z"
+    },
+    {
+      "name": "gaming-companion",
+      "domain": "gaming",
+      "ts": "2026-02-23T21:12:04.840Z"
+    },
+    {
+      "name": "music-companion",
+      "domain": "music",
+      "ts": "2026-02-23T21:12:04.880Z"
+    },
+    {
+      "name": "crypto-reader",
+      "domain": "crypto",
+      "ts": "2026-02-23T21:12:04.920Z"
+    },
+    {
+      "name": "travel-explorer",
+      "domain": "travel",
+      "ts": "2026-02-23T21:12:04.960Z"
+    },
+    {
+      "name": "art-tracker",
+      "domain": "art",
+      "ts": "2026-02-23T21:12:04.998Z"
+    },
+    {
+      "name": "health-reader",
+      "domain": "health",
+      "ts": "2026-02-23T21:12:05.036Z"
+    },
+    {
+      "name": "cooking-reader",
+      "domain": "cooking",
+      "ts": "2026-02-23T21:12:05.075Z"
+    },
+    {
+      "name": "music-collector",
+      "domain": "music",
+      "ts": "2026-02-23T21:12:05.114Z"
+    },
+    {
+      "name": "gaming-dashboard",
+      "domain": "gaming",
+      "ts": "2026-02-23T21:12:05.153Z"
+    },
+    {
+      "name": "reading-coach",
+      "domain": "reading",
+      "ts": "2026-02-23T21:12:05.190Z"
+    },
+    {
+      "name": "education-tracker",
+      "domain": "education",
+      "ts": "2026-02-23T21:12:33.338Z"
+    },
+    {
+      "name": "art-explorer",
+      "domain": "art",
+      "ts": "2026-02-23T21:13:43.757Z"
+    },
+    {
+      "name": "fitness-companion",
+      "domain": "fitness",
+      "ts": "2026-02-23T21:13:59.963Z"
+    },
+    {
+      "name": "music-journal",
+      "domain": "music",
+      "ts": "2026-02-23T21:14:16.423Z"
+    },
+    {
+      "name": "health-analyzer",
+      "domain": "health",
+      "ts": "2026-02-23T21:14:31.398Z"
+    },
+    {
+      "name": "Recipe Explorer",
+      "domain": "astronomy",
+      "ts": "2026-02-23T21:24:32.952Z"
+    },
+    {
+      "name": "Mythology Travel Planner",
+      "domain": "travel",
+      "ts": "2026-02-23T21:26:01.710Z"
+    },
+    {
+      "name": "HeritageSpeak",
+      "domain": "culture",
+      "ts": "2026-02-24T02:30:32.235Z"
+    }
+  ]
+}

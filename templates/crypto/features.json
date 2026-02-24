@@ -1,0 +1,11 @@
+{
+  "name": "crypto-portfolio",
+  "description": "Crypto portfolio tracker with prices and charts",
+  "features": [
+    "portfolio-view",
+    "add-asset",
+    "remove-asset",
+    "price-chart",
+    "settings"
+  ]
+}

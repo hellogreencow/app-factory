@@ -1,0 +1,29 @@
+# Generated apps (can be large)
+apps/*/
+!apps/.gitkeep
+
+# Dependencies
+node_modules/
+
+# Env and secrets
+.env
+.env.local
+*.pem
+
+# Build artifacts
+dist/
+build/
+*.app
+
+# IDE
+.idea/
+.vscode/
+*.swp
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+maestro-logs/

@@ -1,0 +1,50 @@
+#!/usr/bin/expect -f
+set timeout 600
+
+spawn env \
+  EXPO_APPLE_TEAM_ID=87W64WD9U4 \
+  EXPO_APPLE_TEAM_TYPE=INDIVIDUAL \
+  EXPO_ASC_KEY_ID=FGRYRP853Z \
+  EXPO_ASC_ISSUER_ID=4a02782b-2b92-4974-a7ff-91abba5c755d \
+  EXPO_ASC_API_KEY_PATH=/Users/oli/.appstoreconnect/private_keys/AuthKey_FGRYRP853Z.p8 \
+  EAS_BUILD_NO_EXPO_GO_WARNING=true \
+  eas build --platform ios --profile production
+
+expect {
+  "Select certificates to revoke" {
+    puts "\n=== ABORT: Max certs. Manual intervention needed. ==="
+    exit 1
+  }
+  "Reuse this distribution certificate" {
+    send "Y\r"
+    exp_continue
+  }
+  "Generate a new Apple Provisioning Profile" {
+    send "Y\r"
+    exp_continue
+  }
+  "(Y/n)" {
+    send "Y\r"
+    exp_continue
+  }
+  "(y/N)" {
+    send "Y\r"
+    exp_continue
+  }
+  "Waiting for build to complete" {
+    # Success path - build is uploading/building
+  }
+  "Build details" {
+    # Success - show build URL
+  }
+  "build command failed" {
+    puts "\n=== BUILD FAILED ==="
+  }
+  eof {}
+  timeout {
+    puts "\n=== TIMEOUT ==="
+    exit 1
+  }
+}
+
+expect eof

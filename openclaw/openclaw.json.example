@@ -1,0 +1,14 @@
+{
+  "agent": {
+    "workspace": "/path/to/ios-app-factory"
+  },
+  "tools": {
+    "profile": "coding",
+    "allow": ["group:fs", "group:runtime", "group:sessions", "web_search", "web_fetch"]
+  },
+  "agents": {
+    "defaults": {
+      "model": "anthropic/claude-sonnet-4-20250514"
+    }
+  }
+}

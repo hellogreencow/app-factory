@@ -1,0 +1,22 @@
+{
+  "name": "ios-app-factory",
+  "version": "1.0.0",
+  "description": "Agentic suite that continuously codes new iOS apps (crypto to sci-fi), tests them end-to-end in simulator/device, and ships to TestFlight.",
+  "main": "tui.js",
+  "scripts": {
+    "bot": "node bot/telegram.js",
+    "factory": "node orchestrator/run-loop.js",
+    "bridge": "node openclaw/bridge.js",
+    "audit": "bash scripts/audit.sh",
+    "setup": "node scripts/setup.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "eslint": "8.57.0",
+    "eslint-plugin-react": "7.33.0",
+    "node-telegram-bot-api": "^0.67.0"
+  }
+}

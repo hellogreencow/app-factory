@@ -1,0 +1,50 @@
+#!/usr/bin/expect -f
+set timeout 300
+
+spawn env \
+  EXPO_APPLE_TEAM_ID=87W64WD9U4 \
+  EXPO_APPLE_TEAM_TYPE=INDIVIDUAL \
+  EXPO_ASC_KEY_ID=FGRYRP853Z \
+  EXPO_ASC_ISSUER_ID=4a02782b-2b92-4974-a7ff-91abba5c755d \
+  EXPO_ASC_API_KEY_PATH=/Users/oli/.appstoreconnect/private_keys/AuthKey_FGRYRP853Z.p8 \
+  eas submit --platform ios --latest
+
+expect {
+  "Apple ID:" {
+    send "oliver.t.morley@gmail.com\r"
+    exp_continue
+  }
+  "Password" {
+    # Cannot auto-fill password. Need user to handle this.
+    puts "\n=== NEED PASSWORD - cannot automate Apple ID login ==="
+    puts "The API key needs Admin role to create apps, or create the app manually on App Store Connect."
+    interact
+  }
+  "ascAppId" {
+    puts "\n=== NEED ascAppId ==="
+  }
+  "(Y/n)" {
+    send "Y\r"
+    exp_continue
+  }
+  "(y/N)" {
+    send "Y\r"
+    exp_continue
+  }
+  "Submitted" {
+    puts "\n=== SUBMITTED ==="
+  }
+  "Submission successful" {
+    puts "\n=== SUBMITTED ==="
+  }
+  "submit command failed" {
+    puts "\n=== SUBMIT FAILED ==="
+  }
+  eof {}
+  timeout {
+    puts "\n=== TIMEOUT ==="
+    exit 1
+  }
+}
+
+expect eof

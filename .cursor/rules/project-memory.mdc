@@ -1,0 +1,22 @@
+---
+description: Update AGENTS.md when fixing errors or making significant changes
+alwaysApply: true
+---
+
+# iOS App Factory — Project Memory
+
+## Workflow
+
+- Use **Cursor CLI with Composer 1.5** for coding
+- **Continuous checking**: Verify each change before moving on
+- **Progress tracking**: Update AGENTS.md and benchmark/runs.json as work progresses
+- **Testing stages**: Run tests between phases (scaffold, feature, flow, E2E); do not skip
+- **Proofreading**: Multiple passes—lint, logic, accessibility, flow correctness—before marking done
+
+## When Working
+
+1. **After fixing an error**: Add a bullet under "Fixes Applied" in `AGENTS.md`
+2. **After adding a feature or script**: Update "Learned Workspace Facts" or "Next Steps"
+3. **When you hit a new gotcha**: Add it to "Learned Workspace Facts"
+
+Keep entries concise. One line per fix or fact.

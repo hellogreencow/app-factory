@@ -1,0 +1,95 @@
+#!/usr/bin/expect -f
+# Handles eas submit interactive flow including app creation on ASC.
+# Uses Apple ID + app-specific password (not main password, no 2FA needed).
+# Usage: expect eas-submit-create.exp <apple_id> <app_specific_password>
+
+set timeout 600
+set apple_id [lindex $argv 0]
+set asp [lindex $argv 1]
+set start_time [clock seconds]
+set max_wait 600
+
+spawn eas submit --platform ios --latest
+
+expect {
+    "Apple ID:" {
+        send "$apple_id\r"
+        exp_continue
+    }
+    "Password" {
+        send "$asp\r"
+        exp_continue
+    }
+    "password" {
+        send "$asp\r"
+        exp_continue
+    }
+    "Would you like to create" {
+        send "Y\r"
+        exp_continue
+    }
+    "App Name" {
+        send "\r"
+        exp_continue
+    }
+    "Select a primary language" {
+        send "English (U.S.)\r"
+        exp_continue
+    }
+    "What language" {
+        send "English\r"
+        exp_continue
+    }
+    "(Y/n)" {
+        send "Y\r"
+        exp_continue
+    }
+    "(y/N)" {
+        send "Y\r"
+        exp_continue
+    }
+    "Submitted to Apple" {
+        puts "\n=== SUBMITTED ==="
+    }
+    "Submission successful" {
+        puts "\n=== SUBMITTED ==="
+    }
+    "Submitted successfully" {
+        puts "\n=== SUBMITTED ==="
+    }
+    "Submitting your app to Apple" {
+        set elapsed [expr {[clock seconds] - $start_time}]
+        if {$elapsed > $max_wait} {
+            puts "\n=== HARD TIMEOUT after ${elapsed}s ==="
+            exit 1
+        }
+        exp_continue
+    }
+    "Waiting for submission" {
+        set elapsed [expr {[clock seconds] - $start_time}]
+        if {$elapsed > $max_wait} {
+            puts "\n=== HARD TIMEOUT after ${elapsed}s ==="
+            exit 1
+        }
+        exp_continue
+    }
+    -re "Submitting|Waiting|Scheduling|Scheduled" {
+        set elapsed [expr {[clock seconds] - $start_time}]
+        if {$elapsed > $max_wait} {
+            puts "\n=== HARD TIMEOUT after ${elapsed}s ==="
+            exit 1
+        }
+        exp_continue
+    }
+    "submit command failed" {
+        puts "\n=== SUBMIT FAILED ==="
+        exit 1
+    }
+    eof {}
+    timeout {
+        puts "\n=== TIMEOUT ==="
+        exit 1
+    }
+}
+
+expect eof

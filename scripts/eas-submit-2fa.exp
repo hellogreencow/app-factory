@@ -1,0 +1,126 @@
+#!/usr/bin/expect -f
+# eas submit — clean auth flow with wall-clock timeout.
+# Auth: EXPO_APPLE_APP_SPECIFIC_PASSWORD handles it silently.
+# 2FA: if Apple still asks, a native macOS dialog pops for the code.
+# App creation: auto-accepts Y/N prompts.
+
+set timeout 120
+set start_time [clock seconds]
+set max_wait 600
+log_user 1
+
+proc dialog_input {title message} {
+    set scpt [exec mktemp /tmp/eas-2fa-XXXXXX.scpt]
+    set fh [open $scpt w]
+    puts $fh "tell application \"System Events\" to activate"
+    puts $fh "set r to display dialog \"$message\" default answer \"\" buttons {\"Submit\"} default button \"Submit\" with title \"$title\" giving up after 120"
+    puts $fh "if gave up of r then"
+    puts $fh "  return \"\""
+    puts $fh "end if"
+    puts $fh "return text returned of r"
+    close $fh
+    set result [exec osascript $scpt]
+    exec rm -f $scpt
+    return [string trim $result]
+}
+
+proc notify {msg} {
+    catch {exec osascript -e "display notification \"$msg\" with title \"iOS App Factory\" sound name \"Glass\""}
+}
+
+proc check_wall_clock {start_time max_wait} {
+    set elapsed [expr {[clock seconds] - $start_time}]
+    if {$elapsed > $max_wait} {
+        puts "\n  \033\[33m--- Hard timeout after ${elapsed}s ---\033\[0m\n"
+        exit 1
+    }
+}
+
+puts "\033\[1m\033\[95m"
+puts "  +--------------------------------------------+"
+puts "  |  iOS App Factory -- Submitting to TestFlight |"
+puts "  +--------------------------------------------+\033\[0m"
+puts ""
+puts "  \033\[96mAuth:\033\[0m  Using app-specific password (no 2FA needed)"
+puts "  \033\[96mNote:\033\[0m  If a dialog pops, enter the code there"
+puts ""
+
+spawn npx eas submit --platform ios --latest
+
+expect {
+    -re "Apple ID.*>" {
+        puts "\n  \033\[90m-> Filling Apple ID...\033\[0m"
+        send "oliver.t.morley@gmail.com\r"
+        exp_continue
+    }
+
+    -re "6 digit code|Please enter the.*code|verification code" {
+        notify "Apple 2FA required -- check the popup on your screen"
+        log_user 0
+        set code [dialog_input "iOS App Factory -- 2FA" "Apple sent a 6-digit code to your device.\n\nEnter it here:"]
+        log_user 1
+        if {$code ne ""} {
+            puts "\n  \033\[96m-> Sending 2FA code...\033\[0m"
+            send "$code\r"
+        }
+        exp_continue
+    }
+
+    -re "How do you want to validate" {
+        send "\r"
+        exp_continue
+    }
+
+    -re "Would you like to create|create.*app.*App Store" {
+        puts "\n  \033\[96m-> Creating app on App Store Connect...\033\[0m"
+        send "Y\r"
+        exp_continue
+    }
+
+    -re "App Name.*:" {
+        send "\r"
+        exp_continue
+    }
+
+    -re "primary language|Select.*language" {
+        send "\r"
+        exp_continue
+    }
+
+    "(Y/n)" {
+        send "Y\r"
+        exp_continue
+    }
+
+    "(y/N)" {
+        send "Y\r"
+        exp_continue
+    }
+
+    -re "Submitting|Waiting for|Scheduling|Scheduled" {
+        check_wall_clock $start_time $max_wait
+        exp_continue
+    }
+
+    -re "Submitted to Apple|Submission successful|Submitted successfully" {
+        notify "App submitted to TestFlight! Check in 5-30 min."
+        puts "\n  \033\[92mOK  Submitted to TestFlight\033\[0m"
+        puts "  Apple processes it in 5-30 min. You'll get an email.\n"
+    }
+
+    "submit command failed" {
+        notify "Submit failed -- see terminal"
+        puts "\n  \033\[31mFAIL  Submit failed\033\[0m\n"
+        exit 1
+    }
+
+    eof {}
+
+    timeout {
+        check_wall_clock $start_time $max_wait
+        exp_continue
+    }
+}
+
+expect eof
+puts "\n  Done.\n"
