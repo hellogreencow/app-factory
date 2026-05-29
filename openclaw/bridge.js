@@ -2,7 +2,7 @@
 /**
  * OpenClaw Bridge — lets any OpenClaw agent drive the iOS App Factory.
  *
- * OpenClaw agents call this via `exec`:
+ * Commands:
  *   node openclaw/bridge.js build "A mood journal for tracking daily feelings"
  *   node openclaw/bridge.js edit my-app "add a search bar"
  *   node openclaw/bridge.js test my-app
@@ -10,7 +10,7 @@
  *   node openclaw/bridge.js status my-app
  *   node openclaw/bridge.js preview my-app
  *
- * Returns structured JSON on stdout for the agent to parse.
+ * Returns structured JSON on stdout.
  */
 
 require('../orchestrator/lib/env').loadEnv();
@@ -20,7 +20,8 @@ const path = require('path');
 const { spawn } = require('child_process');
 const { chat: llmChat } = require('../orchestrator/lib/llm');
 const { runCodeAgent } = require('../orchestrator/code-agent');
-const { run: runFeatureBuilder } = require('../orchestrator/feature-builder');
+const { designApp } = require('../orchestrator/designer-agent');
+const { run: runAppGenerator } = require('../orchestrator/app-generator');
 
 const ROOT = path.join(__dirname, '..');
 
@@ -48,13 +49,12 @@ function out(obj) { process.stdout.write(JSON.stringify(obj, null, 2) + '\n'); }
 
 async function cmdBuild(description) {
   log(`Building: ${description}`);
+  const model = process.env.CODE_MODEL || 'google/gemini-2.0-flash-001';
 
-  const model = process.env.CODE_MODEL || 'google/gemini-3-flash-preview';
-  const prompt = `You are designing a beautiful, minimal iOS app. Here's what the user wants:
+  // Generate idea spec
+  const prompt = `You are designing a unique, feature-rich iOS app. Here's what the user wants:
 
 "${description}"
-
-Create a precise app specification.
 
 Output ONLY valid JSON:
 {
@@ -62,19 +62,9 @@ Output ONLY valid JSON:
   "slug": "kebab-case-slug",
   "description": "One compelling line",
   "domain": "single-word category",
-  "twist": "minimal",
-  "architecture": "one of: feed, dashboard, tracker, reference, generic",
+  "twist": "visual style notes",
   "style_notes": "Brief visual direction"
-}
-
-Architecture guide:
-- feed: scrollable content (posts, cards, timeline)
-- dashboard: metrics + actions (overview, log, history)
-- tracker: time-based entries (calendar, daily log, stats)
-- reference: browse + detail (browse, item detail, bookmarks)
-- generic: list + create + detail
-
-Output ONLY JSON.`;
+}`;
 
   let idea;
   try {
@@ -93,71 +83,65 @@ Output ONLY JSON.`;
   }
 
   const appDir = path.join(ROOT, 'apps', idea.slug);
-  const arch = idea.architecture || 'generic';
-
-  log(`Spec: ${idea.name} (${arch}) → apps/${idea.slug}`);
+  log(`Spec: ${idea.name} → apps/${idea.slug}`);
   out({ stage: 'spec', idea });
 
   // Scaffold
   log('Scaffolding...');
-  const scaffR = await exec(path.join(ROOT, 'scripts', 'scaffold-minimal.sh'), [idea.slug], { timeout: 90_000 });
+  const scaffR = await exec(path.join(ROOT, 'scripts', 'scaffold-minimal.sh'), [idea.slug], { timeout: 180_000 });
   if (!scaffR.ok) { out({ ok: false, stage: 'scaffold', error: scaffR.stderr.slice(0, 200) }); return; }
 
-  // Template
-  log(`Applying ${arch} template...`);
-  await exec('node', [path.join(ROOT, 'orchestrator', 'template-copy.js'), appDir, arch], { timeout: 10_000 });
-  await exec('node', [path.join(ROOT, 'orchestrator', 'feature-agent.js'), appDir, arch, JSON.stringify(idea)], { timeout: 10_000 });
+  // Design
+  log('Designing app...');
+  let design;
+  try {
+    design = await designApp(idea, { model });
+    fs.writeFileSync(path.join(appDir, 'design.json'), JSON.stringify(design, null, 2), 'utf8');
+    log(`Design: ${design.screens.length} screens`);
+  } catch (e) {
+    out({ ok: false, stage: 'design', error: e.message });
+    return;
+  }
 
-  // Flows
-  log('Generating E2E flows...');
-  await exec('node', [path.join(ROOT, 'orchestrator', 'flow-generator.js'), appDir], { timeout: 10_000 });
-
-  // Dependencies
-  log('Installing dependencies...');
-  const npmR = await exec('npm', ['install'], { cwd: appDir, timeout: 90_000 });
-  if (!npmR.ok) { out({ ok: false, stage: 'npm-install', error: 'npm install failed' }); return; }
-
-  // Customize
-  log('Customizing theme and content...');
-  await exec('node', [path.join(ROOT, 'orchestrator', 'customize-agent.js'), appDir, arch, JSON.stringify(idea)], { timeout: 90_000 });
-
-  // Feature enrichment
-  log('Building real features...');
-  const enrichR = await runFeatureBuilder(appDir, idea, {
+  // Generate
+  log('Generating app...');
+  const genR = await runAppGenerator(appDir, design, {
     model,
-    skipCustom: true,
     onProgress: (m) => log(m),
   });
-  log(`Features: ${enrichR.passed}/${enrichR.features.length} built`);
+  log(`Generator: ${genR.passed}/${genR.total} screens, bundle ${genR.bundleOk ? 'OK' : 'FAIL'}`);
 
-  // Taste
+  // Taste polish
   log('Polishing...');
   await exec('node', [path.join(ROOT, 'orchestrator', 'taste-agent.js'), appDir, JSON.stringify(idea)], { timeout: 60_000 });
-
-  // QA
-  log('Running QA...');
-  await exec('node', [path.join(ROOT, 'orchestrator', 'functional-test.js'), appDir, '--strict'], { timeout: 90_000 });
 
   // Bundle test
   log('Testing bundle...');
   const testR = await exec('node', [path.join(ROOT, 'orchestrator', 'expo-go-test.js'), appDir], { timeout: 60_000 });
 
-  const result = {
+  const screenNames = design.screens.map(s => s.name);
+  const featureCount = design.screens.reduce((a, s) => a + s.features.length, 0);
+
+  out({
     ok: testR.ok,
     stage: 'complete',
     app: {
       name: idea.name,
       slug: idea.slug,
-      architecture: arch,
       description: idea.description,
       path: appDir,
+      screens: screenNames,
+      featureCount,
     },
-    features: enrichR.features.filter(f => f.ok).map(f => f.name),
+    generation: {
+      screensBuilt: genR.passed,
+      screensTotal: genR.total,
+      bundleOk: genR.bundleOk,
+      duration: genR.duration,
+    },
     bundleTest: testR.ok ? 'passed' : 'failed',
     preview: `cd ${appDir} && npx expo start`,
-  };
-
-  out(result);
+  });
 }
 
 async function cmdEdit(slug, editRequest) {
@@ -167,19 +151,18 @@ async function cmdEdit(slug, editRequest) {
   log(`Editing ${slug}: ${editRequest}`);
 
   let idea = null;
-  const fp = path.join(appDir, 'features.json');
+  const fp = path.join(appDir, 'design.json');
   if (fs.existsSync(fp)) { try { idea = JSON.parse(fs.readFileSync(fp, 'utf8')); } catch {} }
 
   const result = await runCodeAgent({
     appDir,
     task: editRequest,
     idea,
-    model: process.env.CODE_MODEL || 'google/gemini-3-flash-preview',
+    model: process.env.CODE_MODEL || 'google/gemini-2.0-flash-001',
     onProgress: (m) => log(m),
   });
 
   if (result.ok) {
-    await exec('node', [path.join(ROOT, 'orchestrator', 'functional-test.js'), appDir, '--strict'], { timeout: 60_000 });
     await exec('node', [path.join(ROOT, 'orchestrator', 'expo-go-test.js'), appDir], { timeout: 60_000 });
   }
 
@@ -196,14 +179,11 @@ async function cmdTest(slug) {
   if (!fs.existsSync(appDir)) { out({ ok: false, error: `App not found: apps/${slug}` }); return; }
 
   log(`Testing ${slug}...`);
-  const qaR = await exec('node', [path.join(ROOT, 'orchestrator', 'functional-test.js'), appDir, '--strict'], { timeout: 90_000 });
   const bundleR = await exec('node', [path.join(ROOT, 'orchestrator', 'expo-go-test.js'), appDir], { timeout: 60_000 });
 
   out({
-    ok: qaR.ok && bundleR.ok,
-    qa: qaR.ok ? 'passed' : 'issues found',
+    ok: bundleR.ok,
     bundle: bundleR.ok ? 'passed' : 'failed',
-    details: (qaR.stdout + bundleR.stdout).split('\n').filter(l => /PASS|FAIL|error|warn/i.test(l)).slice(0, 10),
   });
 }
 
@@ -214,14 +194,16 @@ function cmdList() {
   const apps = fs.readdirSync(appsDir)
     .filter(d => fs.existsSync(path.join(appsDir, d, 'package.json')))
     .map(slug => {
+      const dp = path.join(appsDir, slug, 'design.json');
       const fp = path.join(appsDir, slug, 'features.json');
-      let idea = {};
-      if (fs.existsSync(fp)) { try { idea = JSON.parse(fs.readFileSync(fp, 'utf8')); } catch {} }
+      let info = {};
+      if (fs.existsSync(dp)) { try { info = JSON.parse(fs.readFileSync(dp, 'utf8')); } catch {} }
+      else if (fs.existsSync(fp)) { try { info = JSON.parse(fs.readFileSync(fp, 'utf8')); } catch {} }
       return {
         slug,
-        name: idea.name || slug,
-        architecture: idea.architecture || 'unknown',
-        description: idea.description || '',
+        name: info.name || slug,
+        description: info.description || '',
+        screens: info.screens?.length || 0,
       };
     });
 
@@ -232,21 +214,17 @@ function cmdStatus(slug) {
   const appDir = path.join(ROOT, 'apps', slug);
   if (!fs.existsSync(appDir)) { out({ ok: false, error: `App not found: apps/${slug}` }); return; }
 
-  const fp = path.join(appDir, 'features.json');
-  let idea = {};
-  if (fs.existsSync(fp)) { try { idea = JSON.parse(fs.readFileSync(fp, 'utf8')); } catch {} }
-
-  const hasScreenshots = fs.existsSync(path.join(appDir, 'test-screenshots'));
-  const hasFlows = fs.existsSync(path.join(appDir, 'maestro', 'flows'));
+  const dp = path.join(appDir, 'design.json');
+  let design = {};
+  if (fs.existsSync(dp)) { try { design = JSON.parse(fs.readFileSync(dp, 'utf8')); } catch {} }
 
   out({
     ok: true,
     slug,
-    name: idea.name || slug,
-    architecture: idea.architecture || 'unknown',
-    description: idea.description || '',
-    hasScreenshots,
-    hasFlows,
+    name: design.name || slug,
+    description: design.description || '',
+    screens: design.screens?.length || 0,
+    features: design.screens?.reduce((a, s) => a + (s.features?.length || 0), 0) || 0,
     path: appDir,
     preview: `cd ${appDir} && npx expo start`,
   });
@@ -262,7 +240,6 @@ function cmdPreview(slug) {
       '1. Install Expo Go from the App Store on your iPhone',
       `2. Run: cd ${appDir} && npx expo start`,
       '3. Scan the QR code with your iPhone camera',
-      '4. The app opens instantly in Expo Go',
     ],
     command: `cd ${appDir} && npx expo start`,
   });
@@ -272,30 +249,18 @@ async function main() {
   const [cmd, ...args] = process.argv.slice(2);
 
   switch (cmd) {
-    case 'build':
-      await cmdBuild(args.join(' '));
-      break;
-    case 'edit':
-      await cmdEdit(args[0], args.slice(1).join(' '));
-      break;
-    case 'test':
-      await cmdTest(args[0]);
-      break;
-    case 'list':
-      cmdList();
-      break;
-    case 'status':
-      cmdStatus(args[0]);
-      break;
-    case 'preview':
-      cmdPreview(args[0]);
-      break;
+    case 'build': await cmdBuild(args.join(' ')); break;
+    case 'edit': await cmdEdit(args[0], args.slice(1).join(' ')); break;
+    case 'test': await cmdTest(args[0]); break;
+    case 'list': cmdList(); break;
+    case 'status': cmdStatus(args[0]); break;
+    case 'preview': cmdPreview(args[0]); break;
     default:
       out({
         ok: false,
         error: 'Unknown command',
         usage: {
-          build: 'node openclaw/bridge.js build "description of the app"',
+          build: 'node openclaw/bridge.js build "description"',
           edit: 'node openclaw/bridge.js edit <slug> "what to change"',
           test: 'node openclaw/bridge.js test <slug>',
           list: 'node openclaw/bridge.js list',

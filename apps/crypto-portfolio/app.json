@@ -1,0 +1,16 @@
+{
+  "expo": {
+    "name": "crypto-portfolio",
+    "slug": "crypto-portfolio",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "userInterfaceStyle": "light",
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.iosappfactory.cryptoportfolio"
+    },
+    "plugins": [
+      "expo-asset"
+    ]
+  }
+}

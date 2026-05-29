@@ -12,14 +12,9 @@ const ROOT = path.join(__dirname, '..');
 const TEMPLATES = path.join(ROOT, 'templates');
 const VALID_ARCHS = ['feed', 'dashboard', 'tracker', 'reference', 'generic'];
 
-const NAV_DEPS = {
-  '@react-navigation/native': '^7.1.28',
-  '@react-navigation/native-stack': '^7.13.0',
-  '@react-navigation/bottom-tabs': '^7.14.0',
-  'react-native-screens': '~4.4.0',
-  'react-native-safe-area-context': '4.12.0',
-  '@react-native-async-storage/async-storage': '1.23.1',
-};
+// Scaffold owns SDK-compatible dependency installation via `expo install`.
+// Avoid hard-pinning versions here, which can silently downgrade SDK/runtime deps.
+const NAV_DEPS = {};
 
 function copyDir(src, dest) {
   if (!fs.existsSync(src)) return;

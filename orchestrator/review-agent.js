@@ -18,13 +18,7 @@ const { spawn } = require('child_process');
 const { checkAppReadyForSubmit, findApp, validateCredentials } = require('./asc-api');
 
 const ROOT = path.join(__dirname, '..');
-const EXPO_SDK = '52';
-
-const REQUIRED_DEPS_SDK52 = {
-  'react-native-screens': '~4.4.0',
-  'react-native-safe-area-context': '4.12.0',
-  '@react-native-async-storage/async-storage': '1.23.1',
-};
+const MIN_EXPO_SDK = 54;
 
 function readJSON(p) {
   try { return JSON.parse(fs.readFileSync(p, 'utf8')); } catch { return null; }
@@ -53,20 +47,15 @@ async function checkDependencyVersions(appDir) {
   const pkg = readJSON(pkgPath);
   if (!pkg) return [{ severity: 'error', check: 'package.json', msg: 'Missing or invalid package.json' }];
 
-  const deps = { ...pkg.dependencies, ...pkg.devDependencies };
-  for (const [dep, expected] of Object.entries(REQUIRED_DEPS_SDK52)) {
-    const actual = deps[dep];
-    if (!actual) continue;
-    const cleanExpected = expected.replace(/^[~^]/, '');
-    const cleanActual = actual.replace(/^[~^]/, '');
-    if (cleanActual !== cleanExpected && actual !== expected) {
-      fixes.push({
-        severity: 'error',
-        check: 'depVersion',
-        msg: `${dep}: ${actual} → ${expected} (SDK ${EXPO_SDK} compat)`,
-        autofix: { pkg: dep, from: actual, to: expected },
-      });
-    }
+  const expoSpec = pkg.dependencies?.expo || pkg.devDependencies?.expo || '';
+  const expoMajor = parseInt(String(expoSpec).match(/\d+/)?.[0] || '0', 10);
+  if (!expoMajor || expoMajor < MIN_EXPO_SDK) {
+    fixes.push({
+      severity: 'error',
+      check: 'expo-sdk',
+      msg: `Expo SDK must be >= ${MIN_EXPO_SDK} (found "${expoSpec || 'missing'}")`,
+      autofix: { kind: 'expo-sdk-min' },
+    });
   }
   return fixes;
 }
@@ -116,16 +105,19 @@ async function preDeployAudit(slug) {
     const pkg = readJSON(pkgPath);
     if (pkg) {
       for (const fix of depFixes) {
-        const { pkg: dep, to } = fix.autofix;
-        if (pkg.dependencies?.[dep]) pkg.dependencies[dep] = to;
-        if (pkg.devDependencies?.[dep]) pkg.devDependencies[dep] = to;
-        results.actions.push({ action: 'fix-dep', dep, to });
+        if (fix.autofix?.kind === 'expo-sdk-min') {
+          pkg.dependencies = pkg.dependencies || {};
+          pkg.dependencies.expo = `~${MIN_EXPO_SDK}.0.0`;
+          results.actions.push({ action: 'set-expo-sdk-min', to: pkg.dependencies.expo });
+        }
       }
       writeJSON(pkgPath, pkg);
-      console.log(`[review] Fixed ${depFixes.length} dependency versions`);
+      console.log(`[review] Applied ${depFixes.length} SDK/dependency fixes`);
 
       await execAsync('npm', ['install'], { cwd: appDir });
+      await execAsync('npx', ['expo', 'install', 'react', 'react-native', 'expo-status-bar', 'react-native-screens', 'react-native-safe-area-context', '@react-native-async-storage/async-storage'], { cwd: appDir });
       results.actions.push({ action: 'npm-install' });
+      results.actions.push({ action: 'expo-install-sdk-compatible' });
     }
   }
 
@@ -245,17 +237,9 @@ async function postFailureDiagnosis(slug, errorText) {
       console.log(`[review] MATCH: ${ep.diagnosis}`);
 
       if (ep.autofix === 'fix-deps') {
-        const pkgPath = path.join(appDir, 'package.json');
-        const pkg = readJSON(pkgPath);
-        if (pkg) {
-          for (const [dep, ver] of Object.entries(REQUIRED_DEPS_SDK52)) {
-            if (pkg.dependencies?.[dep]) pkg.dependencies[dep] = ver;
-          }
-          writeJSON(pkgPath, pkg);
-          await execAsync('npm', ['install'], { cwd: appDir });
-          results.actions.push({ action: 'fixed-deps', deps: Object.keys(REQUIRED_DEPS_SDK52) });
-          console.log('[review] [FIX] Fixed SDK 52 dependency versions + npm install');
-        }
+        await execAsync('npx', ['expo', 'install', 'react', 'react-native', 'expo-status-bar', 'react-native-screens', 'react-native-safe-area-context', '@react-native-async-storage/async-storage'], { cwd: appDir });
+        results.actions.push({ action: 'fixed-deps-expo-install' });
+        console.log('[review] [FIX] Re-synced Expo SDK-compatible dependency versions');
       }
 
       if (ep.autofix === 'set-encryption') {

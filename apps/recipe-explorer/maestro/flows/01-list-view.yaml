@@ -1,0 +1,11 @@
+appId: com.iosappfactory.recipeexplorer
+---
+- launchApp
+- extendedWaitUntil:
+    visible:
+      text: "Items"
+    timeout: 15000
+- assertVisible:
+    text: "Items"
+- assertVisible:
+    id: "add-item"

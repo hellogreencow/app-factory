@@ -1,0 +1,282 @@
+{
+  "name": "SplitSnap",
+  "description": "Snap, split, and settle bills with ease.",
+  "style": {
+    "theme": "dark",
+    "backgroundColor": "#121212",
+    "cardColor": "#1E1E1E",
+    "textColor": "#FFFFFF",
+    "accentColor": "#007AFF",
+    "secondaryAccent": "#34C759",
+    "borderRadius": 8
+  },
+  "navigation": {
+    "type": "bottom-tabs",
+    "tabs": [
+      {
+        "name": "Home",
+        "icon": "Ionicons/home",
+        "screen": "HomeScreen"
+      },
+      {
+        "name": "Camera",
+        "icon": "Ionicons/camera",
+        "screen": "CameraScreen"
+      },
+      {
+        "name": "History",
+        "icon": "Ionicons/time",
+        "screen": "HistoryScreen"
+      },
+      {
+        "name": "Settings",
+        "icon": "Ionicons/settings",
+        "screen": "SettingsScreen"
+      }
+    ]
+  },
+  "dataModel": {
+    "entities": [
+      {
+        "name": "Receipt",
+        "storageKey": "@splitSnap_receipts",
+        "fields": [
+          {
+            "name": "id",
+            "type": "string"
+          },
+          {
+            "name": "date",
+            "type": "string"
+          },
+          {
+            "name": "total",
+            "type": "number"
+          },
+          {
+            "name": "items",
+            "type": "array"
+          },
+          {
+            "name": "participants",
+            "type": "array"
+          },
+          {
+            "name": "imageUri",
+            "type": "string"
+          }
+        ]
+      },
+      {
+        "name": "Participant",
+        "storageKey": "@splitSnap_participants",
+        "fields": [
+          {
+            "name": "id",
+            "type": "string"
+          },
+          {
+            "name": "name",
+            "type": "string"
+          },
+          {
+            "name": "owes",
+            "type": "number"
+          },
+          {
+            "name": "paid",
+            "type": "number"
+          }
+        ]
+      }
+    ]
+  },
+  "screens": [
+    {
+      "name": "HomeScreen",
+      "file": "src/screens/HomeScreen.js",
+      "purpose": "Display recent receipts and overall spending.",
+      "features": [
+        {
+          "name": "receipt-list",
+          "description": "Show a list of recent receipts.",
+          "libraries": [
+            "react-native-safe-area-context",
+            "react-native-screens",
+            "@expo/vector-icons",
+            "date-fns"
+          ]
+        },
+        {
+          "name": "spending-summary",
+          "description": "Display a summary of total spending.",
+          "libraries": [
+            "react-native-svg",
+            "@expo/vector-icons"
+          ]
+        }
+      ],
+      "layout": "List of cards with receipt summaries and a spending chart."
+    },
+    {
+      "name": "CameraScreen",
+      "file": "src/screens/CameraScreen.js",
+      "purpose": "Capture receipt images and initiate splitting.",
+      "features": [
+        {
+          "name": "camera-access",
+          "description": "Access the device camera for capturing images.",
+          "libraries": [
+            "expo-camera",
+            "@expo/vector-icons"
+          ]
+        },
+        {
+          "name": "image-picker",
+          "description": "Select images from photo library.",
+          "libraries": [
+            "expo-image-picker",
+            "@expo/vector-icons"
+          ]
+        }
+      ],
+      "layout": "Camera view with a button to take a picture and gallery access."
+    },
+    {
+      "name": "HistoryScreen",
+      "file": "src/screens/HistoryScreen.js",
+      "purpose": "View and manage past receipts.",
+      "features": [
+        {
+          "name": "receipt-history",
+          "description": "Display a list of all past receipts.",
+          "libraries": [
+            "react-native-safe-area-context",
+            "react-native-screens",
+            "@expo/vector-icons",
+            "date-fns"
+          ]
+        },
+        {
+          "name": "receipt-details",
+          "description": "View details of a selected receipt.",
+          "libraries": [
+            "react-native-safe-area-context",
+            "react-native-screens",
+            "@expo/vector-icons"
+          ]
+        }
+      ],
+      "layout": "List of past receipts with search and filter options."
+    },
+    {
+      "name": "SettingsScreen",
+      "file": "src/screens/SettingsScreen.js",
+      "purpose": "Configure app preferences and manage account.",
+      "features": [
+        {
+          "name": "theme-toggle",
+          "description": "Switch between light and dark themes.",
+          "libraries": [
+            "@expo/vector-icons"
+          ]
+        },
+        {
+          "name": "currency-settings",
+          "description": "Set the preferred currency.",
+          "libraries": [
+            "@expo/vector-icons"
+          ]
+        },
+        {
+          "name": "account-management",
+          "description": "Manage account details.",
+          "libraries": [
+            "@expo/vector-icons"
+          ]
+        }
+      ],
+      "layout": "List of settings options with toggles and input fields."
+    },
+    {
+      "name": "ReceiptDetailsScreen",
+      "file": "src/screens/ReceiptDetailsScreen.js",
+      "purpose": "Detailed view of a single receipt.",
+      "features": [
+        {
+          "name": "item-list",
+          "description": "Display list of items on the receipt.",
+          "libraries": [
+            "react-native-safe-area-context",
+            "react-native-screens",
+            "@expo/vector-icons"
+          ]
+        },
+        {
+          "name": "participant-split",
+          "description": "Show how the bill is split between participants.",
+          "libraries": [
+            "react-native-safe-area-context",
+            "react-native-screens",
+            "@expo/vector-icons"
+          ]
+        },
+        {
+          "name": "edit-receipt",
+          "description": "Edit receipt details.",
+          "libraries": [
+            "react-native-safe-area-context",
+            "react-native-screens",
+            "@expo/vector-icons"
+          ]
+        }
+      ],
+      "layout": "Detailed view of receipt items, participants, and total."
+    },
+    {
+      "name": "SplitScreen",
+      "file": "src/screens/SplitScreen.js",
+      "purpose": "Split the bill among participants",
+      "features": [
+        {
+          "name": "participant-management",
+          "description": "Add/remove participants for splitting.",
+          "libraries": [
+            "@expo/vector-icons"
+          ]
+        },
+        {
+          "name": "item-assignment",
+          "description": "Assign items to specific participants.",
+          "libraries": [
+            "@expo/vector-icons"
+          ]
+        },
+        {
+          "name": "calculate-split",
+          "description": "Calculate the amount owed by each participant.",
+          "libraries": [
+            "@expo/vector-icons"
+          ]
+        }
+      ],
+      "layout": "List of participants and items with options to assign and calculate totals."
+    }
+  ],
+  "context": {
+    "file": "src/context/AppContext.js",
+    "hook": "useAppData",
+    "methods": [
+      "addReceipt",
+      "deleteReceipt",
+      "updateReceipt",
+      "addParticipant",
+      "deleteParticipant",
+      "updateParticipant"
+    ],
+    "computed": [
+      "totalSpending",
+      "receiptsByDate"
+    ]
+  }
+}

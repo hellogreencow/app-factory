@@ -135,6 +135,28 @@ async function applyEdits(appDir, edits) {
     if (/=>|=/.test(find)) return true;
     if (/\b(const|let|var|function|import|export|return)\b/.test(find)) return true;
     if (/\b(tabBarButtonTestID|Tab\.Screen|Stack\.Screen|NavigationContainer)\b/.test(find)) return true;
+    if (/[{}\[\]();]/.test(find)) return true;
+    if (/\b(true|false|null|undefined|NaN)\b/.test(find)) return true;
+    return false;
+  };
+
+  const wouldCorruptCode = (code, find, replace) => {
+    const idx = code.indexOf(find);
+    if (idx === -1) return false;
+    const before = code[idx - 1] || '';
+    const after = code[idx + find.length] || '';
+    const isInsideQuotes = (() => {
+      let inSingle = false, inDouble = false, inBacktick = false;
+      for (let i = 0; i < idx; i++) {
+        if (code[i] === "'" && !inDouble && !inBacktick) inSingle = !inSingle;
+        else if (code[i] === '"' && !inSingle && !inBacktick) inDouble = !inDouble;
+        else if (code[i] === '`' && !inSingle && !inDouble) inBacktick = !inBacktick;
+      }
+      return inSingle || inDouble || inBacktick;
+    })();
+    if (!isInsideQuotes && /\w/.test(before)) return true;
+    if (!isInsideQuotes && /\w/.test(after)) return true;
+    if (replace.includes(' ') && !isInsideQuotes) return true;
     return false;
   };
 
@@ -161,7 +183,17 @@ async function applyEdits(appDir, edits) {
         skipped++;
         continue;
       }
-      code = code.replace(find, replace);
+      if (wouldCorruptCode(code, find, replace)) {
+        log(`Skip: would corrupt code in ${relPath}: "${find.slice(0, 40)}"`);
+        skipped++;
+        continue;
+      }
+      const safeReplace = replace
+        .replace(/\u2018/g, "'").replace(/\u2019/g, "'")
+        .replace(/\u201C/g, '"').replace(/\u201D/g, '"')
+        .replace(/\u2014/g, '--').replace(/\u2013/g, '-')
+        .replace(/\u2026/g, '...');
+      code = code.replace(find, safeReplace);
       fileChanged = true;
       applied++;
       log(`Edit: ${relPath}: "${find.slice(0, 30)}" -> "${replace.slice(0, 30)}"`);

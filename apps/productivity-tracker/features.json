@@ -1,0 +1,10 @@
+{
+  "name": "productivity-tracker",
+  "description": "productivity tracker app with offline-first focus",
+  "features": [
+    "list-view",
+    "add-item",
+    "detail-view",
+    "settings"
+  ]
+}

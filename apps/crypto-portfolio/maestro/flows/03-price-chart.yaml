@@ -1,0 +1,18 @@
+# Price chart: tap asset, assert chart screen
+appId: com.iosappfactory.cryptoportfolio
+---
+- launchApp
+- extendedWaitUntil:
+    visible:
+      text: "Portfolio"
+    timeout: 20000
+- tapOn:
+    id: "asset-BTC"
+- extendedWaitUntil:
+    visible:
+      text: "Price Chart"
+    timeout: 10000
+- assertVisible:
+    text: "BTC"
+- assertVisible:
+    text: "7-day trend"

@@ -137,12 +137,12 @@ Every app goes through:
 ```bash
 npm run bot          # Start Telegram bot (primary interface)
 npm run factory      # Autonomous mode: generate random apps continuously
+npm run matrix       # One-command readiness matrix (build/edit/preview/deploy gate checks on near-fear)
+npm run telegram:e2e # Headless Telegram scenario checks (status/preview/deploy/stop/messaging)
 
 # Manual pipeline steps
-node orchestrator/functional-test.js apps/<slug>           # Run QA
-node orchestrator/functional-test.js apps/<slug> --strict   # QA with strict mode
-node orchestrator/expo-go-test.js apps/<slug>              # Bundle test only
-node orchestrator/expo-go-test.js apps/<slug> --full       # Bundle + simulator screenshot
+node orchestrator/runtime-qa.js apps/<slug> --fix          # Full runtime QA with auto-fix loop
+node orchestrator/e2e-matrix.js --slug <slug>              # End-to-end matrix for a specific app
 node orchestrator/feature-builder.js apps/<slug>           # Run feature enrichment
 node orchestrator/code-agent.js apps/<slug> "add a search bar"  # Direct code edit
 

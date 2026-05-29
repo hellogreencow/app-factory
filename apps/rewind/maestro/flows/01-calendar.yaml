@@ -1,0 +1,11 @@
+appId: com.iosappfactory.rewind
+---
+- launchApp
+- extendedWaitUntil:
+    visible:
+      id: "add-entry"
+    timeout: 15000
+- assertVisible:
+    id: "streak"
+- assertVisible:
+    id: "add-entry"

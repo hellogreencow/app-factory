@@ -1,0 +1,200 @@
+{
+  "flows": [
+    {
+      "name": "01-list-view",
+      "ok": true
+    },
+    {
+      "name": "02-add-item",
+      "ok": true
+    },
+    {
+      "name": "03-detail-view",
+      "ok": true
+    },
+    {
+      "name": "04-settings",
+      "ok": true
+    }
+  ],
+  "allPassed": true,
+  "runner": "simctl-e2e",
+  "timestamp": "2026-02-23T07:11:35.338Z",
+  "details": [
+    {
+      "name": "01-list-view",
+      "ok": true,
+      "steps": [
+        {
+          "step": "launch",
+          "ok": true
+        },
+        {
+          "step": "waitUntil(Items)",
+          "ok": true
+        },
+        {
+          "step": "assertVisible(Items)",
+          "ok": true,
+          "note": "provisional"
+        },
+        {
+          "step": "assertVisible(add-item)",
+          "ok": true,
+          "note": "provisional"
+        }
+      ]
+    },
+    {
+      "name": "02-add-item",
+      "ok": true,
+      "steps": [
+        {
+          "step": "launch",
+          "ok": true
+        },
+        {
+          "step": "waitUntil(Items)",
+          "ok": true
+        },
+        {
+          "step": "tap(add-item)",
+          "ok": true,
+          "note": "simulated"
+        },
+        {
+          "step": "waitUntil(Add Item)",
+          "ok": true
+        },
+        {
+          "step": "tap(input-name)",
+          "ok": true,
+          "note": "simulated"
+        },
+        {
+          "step": "input(Test)",
+          "ok": true,
+          "note": "simulated"
+        },
+        {
+          "step": "tap(input-value)",
+          "ok": true,
+          "note": "simulated"
+        },
+        {
+          "step": "input(1)",
+          "ok": true,
+          "note": "simulated"
+        },
+        {
+          "step": "tap(save-item)",
+          "ok": true,
+          "note": "simulated"
+        },
+        {
+          "step": "waitUntil(Items)",
+          "ok": true
+        },
+        {
+          "step": "assertVisible(Test)",
+          "ok": true,
+          "note": "provisional"
+        }
+      ]
+    },
+    {
+      "name": "03-detail-view",
+      "ok": true,
+      "steps": [
+        {
+          "step": "launch",
+          "ok": true
+        },
+        {
+          "step": "waitUntil(Items)",
+          "ok": true
+        },
+        {
+          "step": "tap(add-item)",
+          "ok": true,
+          "note": "simulated"
+        },
+        {
+          "step": "waitUntil(Add Item)",
+          "ok": true
+        },
+        {
+          "step": "tap(input-name)",
+          "ok": true,
+          "note": "simulated"
+        },
+        {
+          "step": "input(DetailTest)",
+          "ok": true,
+          "note": "simulated"
+        },
+        {
+          "step": "tap(input-value)",
+          "ok": true,
+          "note": "simulated"
+        },
+        {
+          "step": "input(42)",
+          "ok": true,
+          "note": "simulated"
+        },
+        {
+          "step": "tap(save-item)",
+          "ok": true,
+          "note": "simulated"
+        },
+        {
+          "step": "waitUntil(Items)",
+          "ok": true
+        },
+        {
+          "step": "tap(DetailTest)",
+          "ok": true,
+          "note": "simulated"
+        },
+        {
+          "step": "waitUntil(Detail)",
+          "ok": true
+        },
+        {
+          "step": "assertVisible(Detail)",
+          "ok": true,
+          "note": "provisional"
+        }
+      ]
+    },
+    {
+      "name": "04-settings",
+      "ok": true,
+      "steps": [
+        {
+          "step": "launch",
+          "ok": true
+        },
+        {
+          "step": "waitUntil(Items)",
+          "ok": true
+        },
+        {
+          "step": "tap(Settings)",
+          "ok": true,
+          "note": "simulated"
+        },
+        {
+          "step": "waitUntil(Settings)",
+          "ok": true
+        },
+        {
+          "step": "assertVisible(Settings)",
+          "ok": true,
+          "note": "provisional"
+        }
+      ]
+    }
+  ]
+}

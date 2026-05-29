@@ -1,0 +1,16 @@
+{
+  "expo": {
+    "name": "fitness-companion",
+    "slug": "fitness-companion",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "userInterfaceStyle": "light",
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.iosappfactory.fitnesscompanion"
+    },
+    "plugins": [
+      "expo-asset"
+    ]
+  }
+}

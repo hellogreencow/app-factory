@@ -1,0 +1,18 @@
+[Unit]
+Description=iOS App Factory Telegram Bot
+After=network.target
+
+[Service]
+Type=simple
+WorkingDirectory=/Users/oli/ios-app-factory
+ExecStart=NODE_PLACEHOLDER bot/telegram.js
+Restart=always
+RestartSec=5
+StandardOutput=journal
+StandardError=journal
+
+# Load .env from project root (orchestrator/lib/env.js also loads it)
+EnvironmentFile=-/Users/oli/ios-app-factory/.env
+
+[Install]
+WantedBy=default.target

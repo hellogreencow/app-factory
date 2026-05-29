@@ -1,0 +1,11 @@
+{
+  "name": "Recipe Explorer",
+  "description": "Discover and recreate recipes based on planetary alignments and celestial events.",
+  "features": [
+    "list-view",
+    "add-item",
+    "detail-view",
+    "settings"
+  ],
+  "architecture": "generic"
+}

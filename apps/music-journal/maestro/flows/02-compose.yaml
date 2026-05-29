@@ -1,0 +1,24 @@
+appId: com.iosappfactory.musicjournal
+---
+- launchApp
+- extendedWaitUntil:
+    visible:
+      text: "Feed"
+    timeout: 15000
+- tapOn:
+    id: "compose-btn"
+- extendedWaitUntil:
+    visible:
+      text: "Compose"
+    timeout: 5000
+- tapOn:
+    id: "input-body"
+- inputText: "Hello from E2E"
+- tapOn:
+    id: "post-btn"
+- extendedWaitUntil:
+    visible:
+      text: "Feed"
+    timeout: 5000
+- assertVisible:
+    text: "Hello from E2E"

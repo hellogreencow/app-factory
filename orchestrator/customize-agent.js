@@ -51,6 +51,14 @@ const STYLE_THEMES = {
   'bold': { bg: '#18181b', card: '#27272a', text: '#fafafa', accent: '#ef4444', tabBg: '#18181b', tabBorder: '#3f3f46', tabActive: '#ef4444', tabInactive: '#71717a', statusBar: 'light' },
 };
 
+function sanitizeCode(code) {
+  return code
+    .replace(/\u2018/g, "'").replace(/\u2019/g, "'")
+    .replace(/\u201C/g, '"').replace(/\u201D/g, '"')
+    .replace(/\u2014/g, '--').replace(/\u2013/g, '-')
+    .replace(/\u2026/g, '...');
+}
+
 function getTheme(twist) {
   if (STYLE_THEMES[twist]) return STYLE_THEMES[twist];
   if (twist?.includes('dark') || twist?.includes('privacy')) return STYLE_THEMES['dark-mode'];
@@ -106,6 +114,7 @@ REWRITE this file so it fits the app idea. Rules:
 6. Do NOT change AsyncStorage logic, useEffect patterns, or context API shape
 7. Do NOT change any computed values logic (streak, total, etc.)
 8. If there's a MOODS or similar constant array, keep the EXACT same values
+9. CRITICAL: Use double quotes for any string containing an apostrophe. Write "Don't" not 'Don't'. This avoids JS syntax errors.
 
 Output ONLY the complete JavaScript file. No markdown fences, no explanation.`;
 
@@ -114,7 +123,7 @@ Output ONLY the complete JavaScript file. No markdown fences, no explanation.`;
     const code = result.replace(/^```(?:javascript|js)?\n?/, '').replace(/\n?```$/, '').trim();
 
     if (code.includes('createContext') && code.includes('export')) {
-      fs.writeFileSync(ctxPath, code, 'utf8');
+      fs.writeFileSync(ctxPath, sanitizeCode(code), 'utf8');
       log(`Customized: ${files.context}`);
     } else {
       log(`Context customization produced invalid output, keeping original`);
@@ -192,6 +201,7 @@ REWRITE this screen to fit the app idea. Rules:
 7. Keep testID and accessibilityLabel attributes if present
 8. CRITICAL: If there are hardcoded arrays (like MOODS = ['great','good','okay','meh']), keep the EXACT SAME values. These must match the context file.
 9. CRITICAL: All field names from the context hook (entries, streak, totalEntries, etc.) must be used EXACTLY as imported. Do not rename them.
+10. CRITICAL: Use double quotes for any string containing an apostrophe. Write "Don't" not 'Don't'. This avoids JS syntax errors.
 
 Output ONLY the complete JavaScript file. No markdown fences, no explanation.`;
 
@@ -199,12 +209,27 @@ Output ONLY the complete JavaScript file. No markdown fences, no explanation.`;
       const result = await chat([{ role: 'user', content: prompt }], { model, temperature: 0.6, max_tokens: 3000 });
       const code = result.replace(/^```(?:javascript|js)?\n?/, '').replace(/\n?```$/, '').trim();
 
-      if (code.includes('export') && (code.includes('Screen') || code.includes('function'))) {
-        fs.writeFileSync(screenPath, code, 'utf8');
-        log(`Customized: ${screenFile}`);
-      } else {
+      if (!(code.includes('export') && (code.includes('Screen') || code.includes('function')))) {
         log(`Screen customization produced invalid output for ${screenFile}, keeping original`);
+        continue;
       }
+
+      // Verify imports were not renamed: every import path in the original must exist in the new code
+      const origImports = [...original.matchAll(/from\s+['"]([^'"]+)['"]/g)].map(m => m[1]);
+      const newImports = [...code.matchAll(/from\s+['"]([^'"]+)['"]/g)].map(m => m[1]);
+      const addedImports = newImports.filter(i => !origImports.includes(i) && !i.startsWith('react'));
+      if (addedImports.length > 0) {
+        log(`Screen ${screenFile}: LLM added new imports (${addedImports.join(', ')}) — keeping original`);
+        continue;
+      }
+      const removedImports = origImports.filter(i => !newImports.includes(i));
+      if (removedImports.length > 0) {
+        log(`Screen ${screenFile}: LLM removed imports (${removedImports.join(', ')}) — keeping original`);
+        continue;
+      }
+
+      fs.writeFileSync(screenPath, sanitizeCode(code), 'utf8');
+      log(`Customized: ${screenFile}`);
     } catch (e) {
       log(`Screen customization failed for ${screenFile}: ${e.message}`);
     }

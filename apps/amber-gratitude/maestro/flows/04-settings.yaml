@@ -1,0 +1,15 @@
+appId: com.iosappfactory.ambergratitude
+---
+- launchApp
+- extendedWaitUntil:
+    visible:
+      id: "add-entry"
+    timeout: 15000
+- tapOn:
+    id: "tab-settings"
+- extendedWaitUntil:
+    visible:
+      id: "settings-title"
+    timeout: 5000
+- assertVisible:
+    id: "settings-title"

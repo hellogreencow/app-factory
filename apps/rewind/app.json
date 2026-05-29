@@ -1,0 +1,16 @@
+{
+  "expo": {
+    "name": "rewind",
+    "slug": "rewind",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "userInterfaceStyle": "light",
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.iosappfactory.rewind"
+    },
+    "plugins": [
+      "expo-asset"
+    ]
+  }
+}

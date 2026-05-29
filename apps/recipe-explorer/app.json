@@ -1,0 +1,16 @@
+{
+  "expo": {
+    "name": "recipe-explorer",
+    "slug": "recipe-explorer",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "userInterfaceStyle": "light",
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.iosappfactory.recipeexplorer"
+    },
+    "plugins": [
+      "expo-asset"
+    ]
+  }
+}

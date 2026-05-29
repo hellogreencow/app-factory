@@ -1,0 +1,274 @@
+{
+  "name": "NearFear",
+  "description": "Discover and rate scary places near you.",
+  "style": {
+    "theme": "dark",
+    "backgroundColor": "#121212",
+    "cardColor": "#212121",
+    "textColor": "#FFFFFF",
+    "accentColor": "#FF4500",
+    "secondaryAccent": "#6a1b9a",
+    "borderRadius": 8
+  },
+  "navigation": {
+    "type": "bottom-tabs",
+    "tabs": [
+      {
+        "name": "Map",
+        "icon": "Ionicons/map-outline",
+        "screen": "MapScreen"
+      },
+      {
+        "name": "Add Place",
+        "icon": "Ionicons/add-circle-outline",
+        "screen": "AddPlaceScreen"
+      },
+      {
+        "name": "Challenges",
+        "icon": "Ionicons/trophy-outline",
+        "screen": "ChallengesScreen"
+      },
+      {
+        "name": "Profile",
+        "icon": "Ionicons/person-outline",
+        "screen": "ProfileScreen"
+      }
+    ]
+  },
+  "dataModel": {
+    "entities": [
+      {
+        "name": "Place",
+        "storageKey": "@nearfear_places",
+        "fields": [
+          {
+            "name": "id",
+            "type": "string"
+          },
+          {
+            "name": "name",
+            "type": "string"
+          },
+          {
+            "name": "latitude",
+            "type": "number"
+          },
+          {
+            "name": "longitude",
+            "type": "number"
+          },
+          {
+            "name": "fearRating",
+            "type": "number"
+          },
+          {
+            "name": "fearTags",
+            "type": "array"
+          },
+          {
+            "name": "reviews",
+            "type": "array"
+          }
+        ]
+      },
+      {
+        "name": "Challenge",
+        "storageKey": "@nearfear_challenges",
+        "fields": [
+          {
+            "name": "id",
+            "type": "string"
+          },
+          {
+            "name": "name",
+            "type": "string"
+          },
+          {
+            "name": "description",
+            "type": "string"
+          },
+          {
+            "name": "placeId",
+            "type": "string"
+          },
+          {
+            "name": "participants",
+            "type": "array"
+          }
+        ]
+      }
+    ]
+  },
+  "screens": [
+    {
+      "name": "MapScreen",
+      "file": "src/screens/MapScreen.js",
+      "purpose": "Display nearby scary places on a map.",
+      "features": [
+        {
+          "name": "map-display",
+          "description": "Shows scary locations on a map with color-coded fear ratings.",
+          "libraries": [
+            "react-native-maps",
+            "expo-location",
+            "@expo/vector-icons"
+          ]
+        },
+        {
+          "name": "location-tracking",
+          "description": "Tracks user location to display nearby places.",
+          "libraries": [
+            "expo-location"
+          ]
+        },
+        {
+          "name": "marker-details",
+          "description": "Displays place details when a map marker is tapped.",
+          "libraries": [
+            "react-native-maps",
+            "@expo/vector-icons"
+          ]
+        }
+      ],
+      "layout": "Full screen MapView with markers and callouts."
+    },
+    {
+      "name": "AddPlaceScreen",
+      "file": "src/screens/AddPlaceScreen.js",
+      "purpose": "Submit a new scary place to the app.",
+      "features": [
+        {
+          "name": "place-submission",
+          "description": "Allows users to submit new locations with name, location, and fear rating.",
+          "libraries": [
+            "expo-location",
+            "@expo/vector-icons",
+            "@react-native-async-storage/async-storage"
+          ]
+        },
+        {
+          "name": "fear-tags",
+          "description": "Add 'fear tags' (e.g., 'haunted', 'creepy alley') to the location.",
+          "libraries": [
+            "@expo/vector-icons"
+          ]
+        },
+        {
+          "name": "location-picker",
+          "description": "Uses map to select the place's coordinates.",
+          "libraries": [
+            "react-native-maps",
+            "expo-location"
+          ]
+        }
+      ],
+      "layout": "Form with text inputs, map picker, and tag selection."
+    },
+    {
+      "name": "ChallengesScreen",
+      "file": "src/screens/ChallengesScreen.js",
+      "purpose": "View and create fear challenges for friends.",
+      "features": [
+        {
+          "name": "challenge-list",
+          "description": "Displays a list of active and completed fear challenges.",
+          "libraries": [
+            "@expo/vector-icons",
+            "@react-native-async-storage/async-storage"
+          ]
+        },
+        {
+          "name": "challenge-creation",
+          "description": "Allows users to create new challenges with a place and description.",
+          "libraries": [
+            "@expo/vector-icons",
+            "@react-native-async-storage/async-storage"
+          ]
+        },
+        {
+          "name": "challenge-details",
+          "description": "Show details about a specific challenge.",
+          "libraries": [
+            "@expo/vector-icons"
+          ]
+        }
+      ],
+      "layout": "List of challenges with add button and detail view."
+    },
+    {
+      "name": "ProfileScreen",
+      "file": "src/screens/ProfileScreen.js",
+      "purpose": "Manage user profile settings and view activity.",
+      "features": [
+        {
+          "name": "profile-info",
+          "description": "Displays user profile information.",
+          "libraries": [
+            "@expo/vector-icons"
+          ]
+        },
+        {
+          "name": "settings-access",
+          "description": "Provides access to app settings and preferences.",
+          "libraries": [
+            "@expo/vector-icons"
+          ]
+        },
+        {
+          "name": "user-activity",
+          "description": "Shows user activity like submitted places and completed challenges.",
+          "libraries": [
+            "@expo/vector-icons"
+          ]
+        }
+      ],
+      "layout": "Profile information with settings button and activity list."
+    },
+    {
+      "name": "PlaceDetailsScreen",
+      "file": "src/screens/PlaceDetailsScreen.js",
+      "purpose": "View details and reviews of a specific place.",
+      "features": [
+        {
+          "name": "place-details",
+          "description": "Displays detailed information about a selected place.",
+          "libraries": [
+            "@expo/vector-icons"
+          ]
+        },
+        {
+          "name": "review-display",
+          "description": "Shows user reviews and ratings for the place.",
+          "libraries": [
+            "@expo/vector-icons"
+          ]
+        },
+        {
+          "name": "review-submission",
+          "description": "Allows users to submit their own reviews and ratings.",
+          "libraries": [
+            "@expo/vector-icons",
+            "@react-native-async-storage/async-storage"
+          ]
+        }
+      ],
+      "layout": "Place details with reviews section and submission form."
+    }
+  ],
+  "context": {
+    "file": "src/context/AppContext.js",
+    "hook": "useAppData",
+    "methods": [
+      "addPlace",
+      "deletePlace",
+      "updatePlace",
+      "addChallenge",
+      "deleteChallenge",
+      "updateChallenge"
+    ],
+    "computed": [
+      "filteredPlaces",
+      "averageFearRating"
+    ]
+  }
+}

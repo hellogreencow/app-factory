@@ -1,0 +1,15 @@
+appId: com.iosappfactory.fitnesscompanion
+---
+- launchApp
+- extendedWaitUntil:
+    visible:
+      text: "Overview"
+    timeout: 15000
+- tapOn:
+    text: "History"
+- extendedWaitUntil:
+    visible:
+      text: "History"
+    timeout: 5000
+- assertVisible:
+    text: "History"

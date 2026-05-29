@@ -1,0 +1,736 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>iOS App Factory</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#07070b;--surface:#0c0c11;--panel:#0a0a0f;--border:#16161c;
+  --text:#c8c9d0;--muted:#5a5a66;--dim:#2c2c35;--faint:#1a1a22;
+  --green:#4ade80;--red:#f87171;--amber:#fbbf24;--cyan:#67e8f9;--blue:#60a5fa;
+  --mono:'JetBrains Mono','SF Mono',Menlo,Consolas,monospace;
+  --sans:'Manrope',-apple-system,BlinkMacSystemFont,sans-serif;
+}
+html,body{height:100%;overflow:hidden;font-size:13px;-webkit-font-smoothing:antialiased}
+body{background:var(--bg);color:var(--text);font-family:var(--sans)}
+::selection{background:rgba(255,255,255,0.08)}
+
+#bgCanvas{position:fixed;inset:0;z-index:0;pointer-events:none;opacity:0.25}
+
+.app{position:relative;z-index:1;display:flex;height:100vh;width:100vw}
+.main{flex:1;display:flex;flex-direction:column;min-width:0;min-height:0;position:relative}
+
+.top-bar{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:14px 24px;border-bottom:1px solid var(--border);flex-shrink:0;
+  background:rgba(7,7,11,0.85);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);
+}
+.top-bar h1{font-size:0.7rem;font-weight:600;letter-spacing:0.12em;text-transform:uppercase;color:var(--muted)}
+.top-bar h1 b{color:var(--text)}
+.timer-display{font-family:var(--mono);font-size:0.7rem;color:var(--dim);min-width:40px;text-align:right}
+.cancel-btn{
+  display:none;padding:3px 10px;
+  font-family:var(--mono);font-size:0.58rem;color:var(--red);
+  background:transparent;border:1px solid rgba(248,113,113,0.25);border-radius:6px;
+  cursor:pointer;margin-left:10px;transition:all 0.15s;text-transform:uppercase;letter-spacing:0.06em;
+}
+.cancel-btn:hover{background:rgba(248,113,113,0.08);border-color:var(--red)}
+.cancel-btn.visible{display:inline-block}
+
+/* ── Feed ────────────────────────────────────────────────────────── */
+.feed{
+  flex:1 1 0;min-height:0;
+  overflow-y:auto;overflow-x:hidden;
+  padding:16px 24px 90px;
+  display:flex;flex-direction:column;gap:4px;
+}
+.feed::-webkit-scrollbar{width:4px}
+.feed::-webkit-scrollbar-thumb{background:var(--border);border-radius:2px}
+
+.blk{animation:fadeUp 0.12s ease;max-width:100%;flex-shrink:0}
+@keyframes fadeUp{from{opacity:0;transform:translateY(3px)}to{opacity:1;transform:none}}
+
+.blk-agent{padding:6px 0}
+.blk-agent .btext{font-size:0.88rem;line-height:1.65;color:var(--text)}
+
+.blk-user{padding:6px 0;display:flex;justify-content:flex-end}
+.blk-user .ububble{
+  background:var(--faint);border:1px solid var(--border);
+  padding:8px 14px;border-radius:12px;font-size:0.86rem;line-height:1.5;
+  max-width:75%;color:var(--text);
+}
+
+/* ── Typing indicator ────────────────────────────────────────────── */
+.typing{padding:6px 0;display:flex;align-items:center;gap:4px;height:28px}
+.typing span{display:block;width:5px;height:5px;background:var(--muted);border-radius:50%;animation:typeDot 1.4s infinite}
+.typing span:nth-child(2){animation-delay:0.2s}
+.typing span:nth-child(3){animation-delay:0.4s}
+@keyframes typeDot{0%,60%,100%{opacity:0.25;transform:scale(0.8)}30%{opacity:1;transform:scale(1)}}
+
+/* ── Example chips ───────────────────────────────────────────────── */
+.examples{display:flex;flex-wrap:wrap;gap:8px;padding:12px 0}
+.example-chip{
+  padding:7px 14px;border:1px solid var(--border);border-radius:20px;
+  font-size:0.78rem;color:var(--muted);cursor:pointer;transition:all 0.15s;
+  background:transparent;font-family:var(--sans);
+}
+.example-chip:hover{border-color:rgba(255,255,255,0.15);color:var(--text);background:var(--faint)}
+
+/* ── Phase progress ──────────────────────────────────────────────── */
+.blk-phase{
+  display:flex;align-items:center;gap:10px;padding:14px 0 6px;
+  font-family:var(--mono);font-size:0.62rem;text-transform:uppercase;
+  letter-spacing:0.1em;color:var(--muted);font-weight:500;
+}
+.blk-phase::after{content:'';flex:1;height:1px;background:var(--border)}
+
+.phase-bar{
+  display:flex;gap:2px;padding:8px 0 4px;
+}
+.phase-pip{
+  flex:1;height:3px;border-radius:1.5px;background:var(--border);transition:background 0.3s;
+}
+.phase-pip.done{background:var(--green)}
+.phase-pip.active{background:var(--text);animation:pulse 1.5s infinite}
+.phase-pip-label{
+  font-family:var(--mono);font-size:0.52rem;color:var(--dim);
+  text-align:center;padding-top:2px;text-transform:uppercase;letter-spacing:0.06em;
+}
+
+/* ── Step ────────────────────────────────────────────────────────── */
+.blk-step{
+  display:flex;align-items:flex-start;gap:8px;padding:2px 0;
+  font-family:var(--mono);font-size:0.68rem;color:var(--dim);line-height:1.55;
+}
+.blk-step .sicon{width:14px;text-align:center;flex-shrink:0;font-size:0.6rem;margin-top:1px}
+.blk-step.kind-write .sicon{color:var(--green)}
+.blk-step.kind-write{color:#3a7a56}
+.blk-step.kind-cmd .sicon{color:var(--cyan)}
+.blk-step.kind-cmd{color:#3a6a7a}
+.blk-step.kind-think .sicon{color:var(--amber)}
+.blk-step.kind-think{color:#7a6a3a}
+.blk-step.kind-retry .sicon{color:var(--amber)}
+.blk-step.kind-repair .sicon{color:var(--amber)}
+.blk-step.kind-read .sicon{color:var(--blue)}
+.blk-step.kind-read{color:#3a5a8a}
+.blk-step.kind-info .sicon{color:var(--dim)}
+.blk-step.kind-tool .sicon{color:var(--cyan)}
+
+/* ── File block ──────────────────────────────────────────────────── */
+.blk-file{
+  background:var(--surface);border:1px solid var(--border);border-radius:6px;
+  overflow:hidden;margin:3px 0;
+}
+.file-head{
+  display:flex;align-items:center;gap:8px;padding:6px 12px;cursor:pointer;
+  font-family:var(--mono);font-size:0.68rem;transition:background 0.1s;
+}
+.file-head:hover{background:var(--faint)}
+.file-head .fchev{color:var(--dim);font-size:0.55rem;transition:transform 0.15s;width:10px}
+.file-head .fpath{color:var(--text);flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.file-head .fmeta{color:var(--dim);white-space:nowrap;font-size:0.62rem}
+.file-head .fmeta .fnew{color:var(--green);margin-right:6px;font-size:0.55rem;text-transform:uppercase;font-weight:500}
+.file-body{max-height:0;overflow:hidden;transition:max-height 0.25s ease;border-top:1px solid transparent}
+.file-body.open{max-height:400px;overflow-y:auto;border-top-color:var(--border)}
+.file-body pre{
+  padding:10px 12px;font-family:var(--mono);font-size:0.64rem;
+  line-height:1.6;color:var(--muted);white-space:pre-wrap;word-break:break-word;margin:0;
+}
+.file-body::-webkit-scrollbar{width:3px}
+.file-body::-webkit-scrollbar-thumb{background:var(--border)}
+
+.blk-done{padding:10px 0;font-family:var(--mono);font-size:0.76rem}
+.blk-done.ok{color:var(--green)}
+.blk-done.fail{color:var(--red)}
+.blk-done .dsub{font-size:0.64rem;color:var(--muted);margin-top:2px}
+
+/* ── Summary block ───────────────────────────────────────────────── */
+.blk-summary{
+  padding:6px 0;font-family:var(--mono);font-size:0.64rem;color:var(--muted);
+}
+
+/* ── Input bar ───────────────────────────────────────────────────── */
+.input-bar{
+  position:absolute;bottom:0;left:0;right:420px;
+  padding:14px 24px;background:rgba(7,7,11,0.94);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
+  display:flex;align-items:flex-end;
+}
+@media(max-width:700px){.input-bar{right:0}}
+.input-wrap{
+  flex:1;display:flex;align-items:flex-end;
+  background:var(--surface);border:1px solid var(--border);border-radius:14px;
+  transition:border-color 0.2s,box-shadow 0.2s;
+}
+.input-wrap:focus-within{border-color:rgba(255,255,255,0.1);box-shadow:0 0 0 1px rgba(255,255,255,0.03)}
+.input-wrap textarea{
+  flex:1;background:transparent;border:none;
+  color:var(--text);font-family:var(--sans);font-size:0.86rem;
+  padding:11px 16px;resize:none;min-height:42px;max-height:140px;line-height:1.5;
+}
+.input-wrap textarea:focus{outline:none}
+.input-wrap textarea::placeholder{color:var(--dim)}
+.send-btn{
+  display:flex;align-items:center;justify-content:center;
+  width:34px;height:34px;margin:4px 6px 4px 0;flex-shrink:0;
+  background:var(--text);border:none;border-radius:10px;
+  cursor:pointer;transition:all 0.15s;color:var(--bg);
+}
+.send-btn svg{width:15px;height:15px}
+.send-btn:hover{background:#fff;transform:scale(1.06)}
+.send-btn:disabled{opacity:0.06;cursor:default;transform:none}
+
+/* ── Right: Preview panel ────────────────────────────────────────── */
+.preview{
+  width:420px;flex-shrink:0;display:flex;flex-direction:column;
+  align-items:center;padding:20px 24px;
+  background:var(--panel);position:relative;overflow-y:auto;overflow-x:hidden;
+  border-left:1px solid var(--border);
+}
+@media(max-width:700px){.preview{display:none}}
+
+.phone{
+  width:252px;height:510px;border:2px solid var(--border);border-radius:34px;
+  background:#000;position:relative;overflow:hidden;flex-shrink:0;
+  box-shadow:0 0 60px rgba(0,0,0,0.5),0 0 100px rgba(100,100,140,0.02);
+  transition:box-shadow 0.6s;
+}
+.phone.active{box-shadow:0 0 60px rgba(0,0,0,0.5),0 0 30px rgba(200,200,220,0.04)}
+.phone-notch{
+  position:absolute;top:0;left:50%;transform:translateX(-50%);
+  width:90px;height:22px;background:#000;border-radius:0 0 14px 14px;
+  border:2px solid var(--border);border-top:none;z-index:3;
+}
+.phone-screen{
+  position:absolute;inset:4px;border-radius:30px;overflow:hidden;
+  display:flex;align-items:center;justify-content:center;background:#000;
+}
+.phone-screen iframe{
+  width:100%;height:100%;border:none;border-radius:30px;background:#000;
+}
+.phone-idle{text-align:center;color:var(--dim);font-size:0.64rem;font-family:var(--mono);line-height:1.8;padding:20px}
+.phone-loader{width:22px;height:22px;border:2px solid var(--border);border-top-color:var(--text);border-radius:50%;animation:spin 1s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+.phone-live{
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  height:100%;padding:20px;gap:12px;cursor:pointer;transition:background 0.2s;
+}
+.phone-live:hover{background:rgba(255,255,255,0.02)}
+.phone-live .pl-badge{
+  font-family:var(--mono);font-size:0.5rem;color:var(--green);text-transform:uppercase;
+  letter-spacing:0.12em;font-weight:600;padding:3px 10px;
+  border:1px solid rgba(74,222,128,0.25);border-radius:20px;
+}
+.phone-live .pl-name{
+  font-family:var(--sans);font-size:0.9rem;color:var(--text);font-weight:600;
+  text-align:center;line-height:1.4;margin-top:8px;
+}
+.phone-live .pl-screens{font-family:var(--mono);font-size:0.58rem;color:var(--muted)}
+.phone-live .pl-open{
+  font-family:var(--mono);font-size:0.56rem;color:var(--dim);
+  margin-top:12px;text-decoration:underline;text-underline-offset:3px;
+}
+.phone-live .pl-open:hover{color:var(--muted)}
+
+.qr-section{
+  display:none;flex-direction:column;align-items:center;gap:8px;
+  margin-top:16px;padding:14px 16px;
+  background:var(--surface);border:1px solid var(--border);border-radius:12px;
+  width:100%;max-width:260px;
+}
+.qr-section.visible{display:flex}
+.qr-section img{width:120px;height:120px;border-radius:4px}
+.qr-section .qr-badge{
+  font-family:var(--mono);font-size:0.52rem;color:var(--green);
+  text-transform:uppercase;letter-spacing:0.1em;font-weight:600;
+}
+.qr-section .qr-label{font-family:var(--mono);font-size:0.58rem;color:var(--muted);text-align:center}
+.qr-section .qr-url{font-family:var(--mono);font-size:0.52rem;color:var(--dim);word-break:break-all;text-align:center}
+
+.preview-status{
+  margin-top:auto;padding-top:12px;text-align:center;
+  font-family:var(--mono);font-size:0.62rem;color:var(--dim);
+}
+.st-dot{display:inline-block;width:5px;height:5px;border-radius:50%;margin-right:5px;vertical-align:middle}
+.st-dot.idle{background:var(--dim)}
+.st-dot.run{background:var(--text);animation:pulse 1.5s infinite}
+.st-dot.ok{background:var(--green)}
+.st-dot.err{background:var(--red)}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:0.15}}
+
+.lb{position:fixed;inset:0;background:rgba(0,0,0,0.92);z-index:100;display:flex;align-items:center;justify-content:center;cursor:zoom-out;opacity:0;pointer-events:none;transition:opacity 0.2s}
+.lb.on{opacity:1;pointer-events:auto}
+.lb img{max-width:90vw;max-height:90vh;border-radius:8px}
+</style>
+</head>
+<body>
+
+<canvas id="bgCanvas"></canvas>
+
+<div class="app">
+
+  <div class="main">
+    <div class="top-bar">
+      <h1><b>ios app factory</b></h1>
+      <div style="display:flex;align-items:center;gap:6px">
+        <button class="cancel-btn" id="cancelBtn" onclick="abortBuild()">cancel</button>
+        <span class="timer-display" id="timer"></span>
+      </div>
+    </div>
+
+    <div class="feed" id="feed">
+      <div class="blk blk-agent"><div class="btext">describe an app and I'll build it. or try one of these:</div></div>
+      <div class="examples" id="exampleChips">
+        <button class="example-chip" onclick="useExample(this)">a pomodoro timer with dark theme and session stats</button>
+        <button class="example-chip" onclick="useExample(this)">dog walk tracker with GPS routes and photo log</button>
+        <button class="example-chip" onclick="useExample(this)">recipe box that saves favorites and generates shopping lists</button>
+        <button class="example-chip" onclick="useExample(this)">surprise me</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="preview">
+    <div class="phone" id="phone">
+      <div class="phone-notch"></div>
+      <div class="phone-screen" id="phoneScreen">
+        <div class="phone-idle">waiting for<br>build</div>
+      </div>
+    </div>
+
+    <div class="qr-section" id="qrSection">
+      <div class="qr-badge">live on device</div>
+      <img id="qrImg" src="" alt="QR">
+      <div class="qr-label">scan with Expo Go</div>
+      <div class="qr-url" id="qrUrl"></div>
+    </div>
+
+    <div class="preview-status" id="previewStatus"><span class="st-dot idle"></span> idle</div>
+  </div>
+
+  <div class="input-bar">
+    <div class="input-wrap">
+      <textarea id="chatInput" rows="1" placeholder="describe an app..." oninput="autoResize(this)"></textarea>
+      <button class="send-btn" id="sendBtn" onclick="sendMessage()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+      </button>
+    </div>
+  </div>
+
+</div>
+
+<div class="lb" id="lb" onclick="closeLb()"><img id="lbImg" src="" alt=""></div>
+
+<script>
+const PHASES=['scaffold','design','generate','repair-gen','taste','qa','repair-qa','screenshots'];
+const PL={scaffold:'scaffolding',design:'designing',generate:'generating',
+  'repair-gen':'repairing',taste:'polishing',qa:'testing','repair-qa':'fixing',
+  screenshots:'screenshots',editing:'editing'};
+
+let ws,buildId,t0,timerInt,sending=false,lastPhase='',sessionId=null;
+let stepCount=0,fileCount=0,currentPhaseIdx=-1;
+const feedQueue=[];
+let feedFlushRaf=null;
+const showVerboseTrace=new URLSearchParams(location.search).get('trace')==='1';
+
+/* ── Background (lightweight) ────────────────────────────────────── */
+(function(){
+  const c=document.getElementById('bgCanvas'),ctx=c.getContext('2d');
+  let w,h;
+  function resize(){w=c.width=innerWidth;h=c.height=innerHeight}
+  resize();addEventListener('resize',resize);
+  const pts=[];
+  for(let i=0;i<18;i++) pts.push({x:Math.random()*2000,y:Math.random()*2000,vx:(Math.random()-0.5)*0.1,vy:(Math.random()-0.5)*0.1,r:Math.random()*1+0.3});
+  function draw(){
+    ctx.clearRect(0,0,w,h);
+    for(let i=0;i<pts.length;i++){
+      const a=pts[i];a.x+=a.vx;a.y+=a.vy;
+      if(a.x<0||a.x>w)a.vx*=-1;if(a.y<0||a.y>h)a.vy*=-1;
+      ctx.fillStyle='rgba(255,255,255,0.015)';
+      ctx.beginPath();ctx.arc(a.x,a.y,a.r,0,Math.PI*2);ctx.fill();
+      ctx.strokeStyle='rgba(255,255,255,0.008)';ctx.lineWidth=0.5;
+      for(let j=i+1;j<pts.length;j++){
+        const b=pts[j],dx=a.x-b.x,dy=a.y-b.y,d=dx*dx+dy*dy;
+        if(d<40000){ctx.globalAlpha=1-(d/40000);ctx.beginPath();ctx.moveTo(a.x,a.y);ctx.lineTo(b.x,b.y);ctx.stroke()}
+      }
+    }
+    ctx.globalAlpha=1;requestAnimationFrame(draw);
+  }
+  draw();
+})();
+
+/* ── WebSocket ───────────────────────────────────────────────────── */
+function connect(){
+  const p=location.protocol==='https:'?'wss':'ws';
+  ws=new WebSocket(`${p}://${location.host}`);
+  ws.onmessage=e=>handleWs(JSON.parse(e.data));
+  ws.onclose=()=>setTimeout(connect,2000);
+  ws.onerror=()=>{};
+}
+
+let streamingEl=null;
+let streamingText='';
+
+function handleWs(m){
+  if(m.type==='build:start') onBuildStart(m);
+  if(m.type==='build:phase') onPhase(m.phase);
+  if(m.type==='build:step') onStep(m);
+  if(m.type==='build:trace') onTrace(m);
+  if(m.type==='build:file') onFile(m);
+  if(m.type==='build:design') onDesign(m);
+  if(m.type==='build:done') onBuildDone(m);
+  if(m.type==='build:aborted') onBuildDone({ok:false,phase:'failed',errors:[{message:'cancelled'}]});
+  if(m.type==='build:restore') onBuildRestore(m);
+  if(m.type==='preview:starting') onPreviewStarting();
+  if(m.type==='preview:ready') onPreviewReady(m);
+  if(m.type==='preview:failed') onPreviewFailed(m);
+  if(m.type==='preview:stopped') onPreviewStopped();
+  if(m.type==='edit:start') onEditStart(m);
+  if(m.type==='edit:step') onStep({msg:m.msg,kind:m.kind});
+  if(m.type==='edit:trace') onTrace(m);
+  if(m.type==='edit:done') onEditDone(m);
+  if(m.type==='chat:typing') onChatTyping();
+  if(m.type==='chat:delta') onChatDelta(m.delta);
+  if(m.type==='chat:done') onChatDone();
+}
+
+function onChatTyping(){
+  hideTyping();
+  streamingText='';
+  const f=q('#feed');
+  f.insertAdjacentHTML('beforeend','<div class="blk blk-agent" id="streamBlock"><div class="btext" id="streamText"></div></div>');
+  streamingEl=q('#streamText');
+  f.scrollTop=f.scrollHeight;
+}
+
+function onChatDelta(delta){
+  if(!streamingEl) return;
+  streamingText+=delta;
+  const clean=streamingText.replace(/\[(BUILD|EDIT):[\s\S]*?\]\s*$/,'').trim();
+  streamingEl.textContent=clean;
+  const f=q('#feed');
+  f.scrollTop=f.scrollHeight;
+}
+
+function onChatDone(){
+  streamingEl=null;
+  streamingText='';
+}
+
+/* ── Chat ────────────────────────────────────────────────────────── */
+function useExample(el){
+  q('#chatInput').value=el.textContent;
+  sendMessage();
+}
+
+async function sendMessage(){
+  const input=q('#chatInput');const text=input.value.trim();
+  if(!text||sending)return;
+  input.value='';autoResize(input);
+  hideExamples();
+  addBlock('user',text);
+  showTyping();
+  sending=true;q('#sendBtn').disabled=true;
+  try{
+    const headers={'Content-Type':'application/json'};
+    if(sessionId) headers['X-Session-Id']=sessionId;
+    const r=await fetch('/api/chat',{method:'POST',headers,body:JSON.stringify({message:text}),credentials:'include'});
+    const d=await r.json();
+    if(d.sessionId) sessionId=d.sessionId;
+    hideTyping();
+    if(!streamingEl && !q('#streamBlock') && d.reply) addBlock('agent',d.reply);
+  }catch(e){hideTyping();addBlock('agent','connection error. try again.')}
+  sending=false;q('#sendBtn').disabled=false;input.focus();
+}
+
+function hideExamples(){
+  const el=q('#exampleChips');
+  if(el) el.remove();
+}
+
+function showTyping(){
+  hideTyping();
+  const f=q('#feed');
+  f.insertAdjacentHTML('beforeend','<div class="typing" id="typingDots"><span></span><span></span><span></span></div>');
+  f.scrollTop=f.scrollHeight;
+}
+
+function hideTyping(){
+  const el=q('#typingDots');
+  if(el) el.remove();
+}
+
+/* ── Feed batching ───────────────────────────────────────────────── */
+function appendFeed(html){
+  feedQueue.push(html);
+  if(feedFlushRaf) return;
+  feedFlushRaf=requestAnimationFrame(flushFeed);
+}
+
+function flushFeed(){
+  feedFlushRaf=null;
+  if(!feedQueue.length) return;
+  const f=q('#feed');
+  const html=feedQueue.join('');
+  feedQueue.length=0;
+  f.insertAdjacentHTML('beforeend',html);
+  f.scrollTop=f.scrollHeight;
+}
+
+/* ── Rendering ───────────────────────────────────────────────────── */
+function addBlock(type,content){
+  if(type==='agent') appendFeed(`<div class="blk blk-agent"><div class="btext">${esc(content)}</div></div>`);
+  else if(type==='user') appendFeed(`<div class="blk blk-user"><div class="ububble">${esc(content)}</div></div>`);
+}
+
+function addPhaseBlock(phase){
+  appendFeed(`<div class="blk blk-phase">${PL[phase]||phase}</div>`);
+}
+
+function addStepBlock(msg,kind){
+  const icons={write:'\u25B6',cmd:'$',think:'\u25CB',retry:'\u21BB',repair:'\u2692',info:'\u00B7',read:'\u25C1',tool:'\u2699'};
+  appendFeed(`<div class="blk blk-step kind-${kind}"><span class="sicon">${icons[kind]||'\u00B7'}</span><span>${esc(msg)}</span></div>`);
+}
+
+function addFileBlock(data){
+  const id='f'+Date.now()+Math.random().toString(36).slice(2,6);
+  fileCount++;
+  appendFeed(`<div class="blk blk-file">
+      <div class="file-head" onclick="toggleFile('${id}')">
+        <span class="fchev" id="chev-${id}">\u25B8</span>
+        <span class="fpath">${esc(data.path)}</span>
+        <span class="fmeta">${data.isNew?'<span class="fnew">new</span>':''}${data.lines}L</span>
+      </div>
+      <div class="file-body" id="body-${id}"><pre>${esc(data.preview)}${data.lines>12?'\n...':''}</pre></div>
+    </div>`);
+}
+
+function addDesignBlock(data){
+  const screens=data.screens.map(s=>`  ${s.name} \u2192 ${s.file}`).join('\n');
+  const ents=(data.entities||[]).join(', ');
+  let content=`${data.screens.length} screens:\n${screens}`;
+  if(ents) content+=`\ndata: ${ents}`;
+  if(data.style) content+=`\ncolors: ${data.style.backgroundColor} / ${data.style.accentColor}`;
+  addStepBlock('Designed '+data.screens.length+' screens','think');
+  appendFeed(`<div class="blk blk-file">
+      <div class="file-head" onclick="toggleFile('design')">
+        <span class="fchev" id="chev-design">\u25B8</span>
+        <span class="fpath">design.json</span>
+        <span class="fmeta"><span class="fnew">new</span>${data.screens.length} screens</span>
+      </div>
+      <div class="file-body" id="body-design"><pre>${esc(content)}</pre></div>
+    </div>`);
+}
+
+function addDoneBlock(m){
+  if(m.ok){
+    let sub=`${m.screenCount||'?'} screens`;
+    if(m.genResult) sub+=` \u00B7 ${m.genResult.passed}/${m.genResult.total} passed`;
+    sub+=` \u00B7 ${Math.round(m.duration||0)}s`;
+    appendFeed(`<div class="blk blk-done ok">\u2713 build complete<div class="dsub">${sub}</div></div>`);
+  }else{
+    const err=m.errors?.[0]?.message||'unknown error';
+    appendFeed(`<div class="blk blk-done fail">\u2717 build failed<div class="dsub">${esc(err)}</div></div>`);
+  }
+}
+
+function addSummaryBlock(text){
+  appendFeed(`<div class="blk blk-summary">${esc(text)}</div>`);
+}
+
+function toggleFile(id){
+  const body=document.getElementById('body-'+id);
+  const chev=document.getElementById('chev-'+id);
+  if(!body)return;
+  body.classList.toggle('open');
+  if(chev) chev.textContent=body.classList.contains('open')?'\u25BE':'\u25B8';
+}
+
+function addTraceBlock(m){
+  if(!showVerboseTrace) return;
+  const tool=m.tool||m.kind||'trace';
+  const detail=(m.path||m.pattern||m.label||'').toString().trim();
+  const dur=Number.isFinite(m.durationMs)?` ${m.durationMs}ms`:'';
+  const state=m.ok===false?'fail':'ok';
+  const msg=`${tool}${detail?' \u2192 '+detail:''}${dur}`;
+  addStepBlock(msg,m.ok===false?'retry':'read');
+}
+
+/* ── Phase progress bar ──────────────────────────────────────────── */
+function renderPhaseBar(){
+  let existing=q('#phaseBar');
+  if(!existing){
+    const f=q('#feed');
+    f.insertAdjacentHTML('beforeend',`<div class="phase-bar" id="phaseBar">${PHASES.map((_,i)=>`<div class="phase-pip" data-idx="${i}"></div>`).join('')}</div>`);
+    existing=q('#phaseBar');
+  }
+  const pips=existing.querySelectorAll('.phase-pip');
+  pips.forEach((pip,i)=>{
+    pip.className='phase-pip';
+    if(i<currentPhaseIdx) pip.classList.add('done');
+    else if(i===currentPhaseIdx) pip.classList.add('active');
+  });
+}
+
+/* ── Build lifecycle ─────────────────────────────────────────────── */
+function onBuildStart(m){
+  buildId=m.id;t0=Date.now();lastPhase='';stepCount=0;fileCount=0;currentPhaseIdx=-1;
+  hideExamples();
+  q('#phone').classList.add('active');
+  q('#phoneScreen').innerHTML='<div class="phone-loader"></div>';
+  q('#cancelBtn').classList.add('visible');
+  setStatus('run','building...');
+  startTimer();
+}
+
+function onBuildRestore(m){
+  buildId=m.id;t0=Date.now()-(m.logs?.length||0)*2000;lastPhase='';stepCount=0;fileCount=0;currentPhaseIdx=-1;
+  q('#phone').classList.add('active');
+  q('#phoneScreen').innerHTML='<div class="phone-loader"></div>';
+  q('#cancelBtn').classList.add('visible');
+  setStatus('run','restoring...');
+  if(m.logs?.length) addSummaryBlock(`restoring ${m.logs.length} previous steps...`);
+  startTimer();
+}
+
+function onPhase(phase){
+  if(phase!==lastPhase){
+    if(lastPhase && stepCount>0){
+      addSummaryBlock(`${PL[lastPhase]||lastPhase}: ${stepCount} steps, ${fileCount} files`);
+      stepCount=0;fileCount=0;
+    }
+    lastPhase=phase;
+    currentPhaseIdx=PHASES.indexOf(phase);
+    addPhaseBlock(phase);
+    renderPhaseBar();
+    setStatus('run',PL[phase]||phase);
+  }
+}
+
+function onStep(m){
+  stepCount++;
+  addStepBlock(m.msg,m.kind);
+}
+function onTrace(m){ addTraceBlock(m); }
+
+function onFile(m){ addFileBlock(m); }
+function onDesign(m){ addDesignBlock(m); }
+
+function onBuildDone(m){
+  stopTimer();
+  q('#cancelBtn').classList.remove('visible');
+  if(lastPhase && stepCount>0){
+    addSummaryBlock(`${PL[lastPhase]||lastPhase}: ${stepCount} steps, ${fileCount} files`);
+  }
+  addDoneBlock(m);
+  if(m.ok) setStatus('run','starting preview...');
+  else{ q('#phone').classList.remove('active'); setStatus('err','build failed'); q('#phoneScreen').innerHTML='<div class="phone-idle">build failed</div>'; }
+  buildId=null;stepCount=0;fileCount=0;currentPhaseIdx=-1;
+}
+
+function onEditStart(m){
+  addPhaseBlock('editing');
+  addStepBlock('Editing: '+m.description,'write');
+  setStatus('run','editing...');
+}
+
+function onEditDone(m){
+  if(m.ok){ addStepBlock('Edit applied. Hot-reloading...','cmd'); setStatus('ok','edit applied'); }
+  else{ addStepBlock('Edit failed: '+(m.error||'unknown'),'info'); setStatus('err','edit failed'); }
+}
+
+/* ── Abort ───────────────────────────────────────────────────────── */
+function abortBuild(){
+  if(!buildId) return;
+  fetch(`/api/builds/${buildId}/abort`,{method:'POST'}).catch(()=>{});
+}
+
+/* ── Preview ─────────────────────────────────────────────────────── */
+function setStatus(state,text){
+  q('#previewStatus').innerHTML=`<span class="st-dot ${state}"></span> ${text}`;
+}
+
+function onPreviewStarting(){
+  q('#phoneScreen').innerHTML='<div class="phone-loader"></div>';
+  setStatus('run','starting expo...');
+  q('#qrSection').classList.remove('visible');
+}
+
+let currentWebUrl=null;
+
+function onPreviewReady(m){
+  currentWebUrl=m.webUrl||null;
+  const name=(m.slug||'app').replace(/-/g,' ');
+  q('#phoneScreen').innerHTML=`<div class="phone-live" onclick="openWebPreview()">
+    <div class="pl-badge">live</div>
+    <div class="pl-name">${esc(name)}</div>
+    <div class="pl-screens">running on expo</div>
+    <div class="pl-open">${m.webUrl?'click to open web preview':'scan QR to preview'}</div>
+  </div>`;
+  q('#phone').classList.add('active');
+  setStatus('ok','preview live');
+
+  if(m.qrDataUrl){
+    q('#qrImg').src=m.qrDataUrl;
+    q('#qrUrl').textContent=m.url;
+    q('#qrSection').classList.add('visible');
+  }
+}
+
+function openWebPreview(){
+  if(currentWebUrl) window.open(currentWebUrl,'_blank');
+}
+
+function onPreviewFailed(m){
+  q('#phoneScreen').innerHTML=`<div class="phone-idle">preview failed<br><br>${esc((m.error||'unknown').slice(0,100))}</div>`;
+  setStatus('err','preview failed');
+  q('#qrSection').classList.remove('visible');
+}
+
+function onPreviewStopped(){
+  q('#phoneScreen').innerHTML='<div class="phone-idle">preview stopped</div>';
+  setStatus('idle','idle');
+  q('#phone').classList.remove('active');
+  q('#qrSection').classList.remove('visible');
+}
+
+/* ── Timer ───────────────────────────────────────────────────────── */
+function startTimer(){
+  stopTimer();
+  timerInt=setInterval(()=>{
+    if(!t0)return;
+    const s=Math.floor((Date.now()-t0)/1000);
+    q('#timer').textContent=`${Math.floor(s/60)}:${String(s%60).padStart(2,'0')}`;
+  },1000);
+}
+function stopTimer(){if(timerInt){clearInterval(timerInt);timerInt=null}}
+
+/* ── Lightbox ────────────────────────────────────────────────────── */
+function openLb(u){q('#lbImg').src=u;q('#lb').classList.add('on')}
+function closeLb(){q('#lb').classList.remove('on')}
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closeLb()});
+
+/* ── Helpers ─────────────────────────────────────────────────────── */
+function autoResize(el){el.style.height='auto';el.style.height=Math.min(el.scrollHeight,140)+'px'}
+q('#chatInput').addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();sendMessage()}});
+function q(s){return document.querySelector(s)}
+function esc(s){const d=document.createElement('div');d.textContent=s;return d.innerHTML}
+
+/* ── Init ────────────────────────────────────────────────────────── */
+connect();
+q('#chatInput').focus();
+
+(async()=>{
+  try{
+    const r=await fetch('/api/preview/status');
+    const d=await r.json();
+    if(d.active) onPreviewReady({slug:d.slug,url:d.url,webUrl:d.webUrl,qrDataUrl:d.qrDataUrl});
+  }catch(e){}
+})();
+</script>
+</body>
+</html>

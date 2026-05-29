@@ -1,0 +1,16 @@
+# Settings: navigate to Settings tab
+appId: com.iosappfactory.cryptoportfolio
+---
+- launchApp
+- extendedWaitUntil:
+    visible:
+      text: "Portfolio"
+    timeout: 20000
+- tapOn:
+    text: "Settings"
+- extendedWaitUntil:
+    visible:
+      text: "Settings"
+    timeout: 10000
+- assertVisible:
+    text: "Crypto Portfolio"

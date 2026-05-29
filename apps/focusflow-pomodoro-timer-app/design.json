@@ -1,0 +1,360 @@
+{
+  "name": "FocusFlow",
+  "description": "Pomodoro timer app with work/break intervals, session history, and customizable timers",
+  "style": {
+    "theme": "dark",
+    "backgroundColor": "#0f0f1a",
+    "cardColor": "#1a1a2e",
+    "textColor": "#e0e0e8",
+    "accentColor": "#6366f1",
+    "secondaryAccent": "#8b5cf6",
+    "borderRadius": 16
+  },
+  "navigation": {
+    "type": "bottom-tabs",
+    "tabs": [
+      {
+        "name": "Timer",
+        "icon": "Ionicons/timer-outline",
+        "screen": "TimerScreen"
+      },
+      {
+        "name": "History",
+        "icon": "Ionicons/time-outline",
+        "screen": "HistoryScreen"
+      },
+      {
+        "name": "Stats",
+        "icon": "Ionicons/stats-chart-outline",
+        "screen": "StatsScreen"
+      },
+      {
+        "name": "Settings",
+        "icon": "Ionicons/settings-outline",
+        "screen": "SettingsScreen"
+      }
+    ]
+  },
+  "dataModel": {
+    "entities": [
+      {
+        "name": "Session",
+        "storageKey": "@focusflow_sessions",
+        "fields": [
+          {
+            "name": "id",
+            "type": "string"
+          },
+          {
+            "name": "type",
+            "type": "string"
+          },
+          {
+            "name": "duration",
+            "type": "number"
+          },
+          {
+            "name": "completedAt",
+            "type": "string"
+          },
+          {
+            "name": "interrupted",
+            "type": "boolean"
+          }
+        ]
+      },
+      {
+        "name": "Settings",
+        "storageKey": "@focusflow_settings",
+        "fields": [
+          {
+            "name": "workDuration",
+            "type": "number"
+          },
+          {
+            "name": "shortBreakDuration",
+            "type": "number"
+          },
+          {
+            "name": "longBreakDuration",
+            "type": "number"
+          },
+          {
+            "name": "sessionsUntilLongBreak",
+            "type": "number"
+          },
+          {
+            "name": "autoStartBreaks",
+            "type": "boolean"
+          },
+          {
+            "name": "autoStartWork",
+            "type": "boolean"
+          },
+          {
+            "name": "soundEnabled",
+            "type": "boolean"
+          },
+          {
+            "name": "hapticsEnabled",
+            "type": "boolean"
+          }
+        ]
+      }
+    ]
+  },
+  "screens": [
+    {
+      "name": "TimerScreen",
+      "file": "src/screens/TimerScreen.js",
+      "purpose": "Main Pomodoro timer with circular progress and controls",
+      "features": [
+        {
+          "name": "circular-timer",
+          "description": "Animated circular progress ring with gradient stroke showing remaining time",
+          "libraries": [
+            "react-native-svg",
+            "react-native-reanimated",
+            "expo-linear-gradient"
+          ]
+        },
+        {
+          "name": "timer-controls",
+          "description": "Start, pause, reset buttons with haptic feedback on interaction",
+          "libraries": [
+            "@expo/vector-icons",
+            "expo-haptics"
+          ]
+        },
+        {
+          "name": "session-indicator",
+          "description": "Display current session type and count toward long break",
+          "libraries": [
+            "@expo/vector-icons"
+          ]
+        },
+        {
+          "name": "auto-transitions",
+          "description": "Automatically switch between work and break intervals based on settings",
+          "libraries": [
+            "expo-haptics"
+          ]
+        },
+        {
+          "name": "background-gradient",
+          "description": "Soft gradient background that changes color based on session type",
+          "libraries": [
+            "expo-linear-gradient"
+          ]
+        }
+      ],
+      "layout": "Centered circular timer with large time display, session type badge above, control buttons below, gradient background"
+    },
+    {
+      "name": "HistoryScreen",
+      "file": "src/screens/HistoryScreen.js",
+      "purpose": "List of completed Pomodoro sessions with filtering",
+      "features": [
+        {
+          "name": "session-list",
+          "description": "Scrollable list of past sessions grouped by date with swipe actions",
+          "libraries": [
+            "react-native-gesture-handler",
+            "@expo/vector-icons",
+            "date-fns"
+          ]
+        },
+        {
+          "name": "session-cards",
+          "description": "Cards showing session type, duration, completion time with gradient accents",
+          "libraries": [
+            "expo-linear-gradient",
+            "@expo/vector-icons"
+          ]
+        },
+        {
+          "name": "date-grouping",
+          "description": "Sessions grouped by day with relative date headers",
+          "libraries": [
+            "date-fns"
+          ]
+        },
+        {
+          "name": "filter-options",
+          "description": "Filter by session type: all, work, short break, long break",
+          "libraries": [
+            "@expo/vector-icons"
+          ]
+        },
+        {
+          "name": "delete-session",
+          "description": "Swipe to delete individual sessions with haptic confirmation",
+          "libraries": [
+            "react-native-gesture-handler",
+            "expo-haptics"
+          ]
+        }
+      ],
+      "layout": "Scrollable list with date section headers, session cards with icons, filter chips at top"
+    },
+    {
+      "name": "StatsScreen",
+      "file": "src/screens/StatsScreen.js",
+      "purpose": "Visual statistics and insights about focus sessions",
+      "features": [
+        {
+          "name": "summary-cards",
+          "description": "Total sessions, focus time, and completion rate in gradient cards",
+          "libraries": [
+            "expo-linear-gradient",
+            "@expo/vector-icons"
+          ]
+        },
+        {
+          "name": "weekly-chart",
+          "description": "Bar chart showing daily session counts for the past week",
+          "libraries": [
+            "react-native-svg",
+            "date-fns"
+          ]
+        },
+        {
+          "name": "session-breakdown",
+          "description": "Pie chart displaying work vs break session distribution",
+          "libraries": [
+            "react-native-svg",
+            "react-native-reanimated"
+          ]
+        },
+        {
+          "name": "streak-tracker",
+          "description": "Current and longest streak of consecutive days with sessions",
+          "libraries": [
+            "@expo/vector-icons",
+            "date-fns"
+          ]
+        },
+        {
+          "name": "time-period-selector",
+          "description": "Toggle between week, month, and all-time statistics view",
+          "libraries": [
+            "@expo/vector-icons"
+          ]
+        }
+      ],
+      "layout": "Scrollable view with summary cards at top, charts in middle, streak info at bottom, all with dark cards"
+    },
+    {
+      "name": "SettingsScreen",
+      "file": "src/screens/SettingsScreen.js",
+      "purpose": "Customize timer durations and app preferences",
+      "features": [
+        {
+          "name": "duration-pickers",
+          "description": "Adjust work, short break, and long break durations with slider inputs",
+          "libraries": [
+            "@expo/vector-icons",
+            "react-native-gesture-handler"
+          ]
+        },
+        {
+          "name": "long-break-interval",
+          "description": "Set number of work sessions before triggering a long break",
+          "libraries": [
+            "@expo/vector-icons"
+          ]
+        },
+        {
+          "name": "auto-start-toggles",
+          "description": "Enable auto-start for breaks and work sessions independently",
+          "libraries": [
+            "@expo/vector-icons"
+          ]
+        },
+        {
+          "name": "notification-settings",
+          "description": "Toggle sound and haptic feedback for session transitions",
+          "libraries": [
+            "@expo/vector-icons",
+            "expo-haptics"
+          ]
+        },
+        {
+          "name": "reset-stats",
+          "description": "Clear all session history with confirmation dialog",
+          "libraries": [
+            "@expo/vector-icons",
+            "expo-haptics"
+          ]
+        }
+      ],
+      "layout": "Grouped settings sections with sliders, toggles, and buttons in dark cards with labels"
+    },
+    {
+      "name": "OnboardingScreen",
+      "file": "src/screens/OnboardingScreen.js",
+      "purpose": "Welcome new users and explain Pomodoro technique",
+      "features": [
+        {
+          "name": "swipeable-slides",
+          "description": "Horizontal swipeable slides explaining work intervals, breaks, and benefits",
+          "libraries": [
+            "react-native-gesture-handler",
+            "react-native-reanimated",
+            "@expo/vector-icons"
+          ]
+        },
+        {
+          "name": "gradient-backgrounds",
+          "description": "Each slide has unique gradient matching session type colors",
+          "libraries": [
+            "expo-linear-gradient"
+          ]
+        },
+        {
+          "name": "animated-icons",
+          "description": "Large animated icons illustrating each concept with smooth transitions",
+          "libraries": [
+            "react-native-reanimated",
+            "@expo/vector-icons"
+          ]
+        },
+        {
+          "name": "progress-dots",
+          "description": "Dot indicators showing current slide position with animations",
+          "libraries": [
+            "react-native-reanimated"
+          ]
+        },
+        {
+          "name": "quick-setup",
+          "description": "Final slide allows setting initial timer preferences before starting",
+          "libraries": [
+            "@expo/vector-icons",
+            "@react-native-async-storage/async-storage"
+          ]
+        }
+      ],
+      "layout": "Full-screen slides with centered icon, title, description, progress dots at bottom, skip/next buttons"
+    }
+  ],
+  "context": {
+    "file": "src/context/FocusFlowContext.js",
+    "hook": "useFocusFlow",
+    "methods": [
+      "addSession",
+      "deleteSession",
+      "updateSettings",
+      "resetAllData",
+      "completeSession"
+    ],
+    "computed": [
+      "todaySessions",
+      "weekStats",
+      "monthStats",
+      "currentStreak",
+      "longestStreak",
+      "totalFocusTime"
+    ]
+  }
+}

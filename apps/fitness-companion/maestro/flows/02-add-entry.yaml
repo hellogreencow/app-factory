@@ -1,0 +1,22 @@
+appId: com.iosappfactory.fitnesscompanion
+---
+- launchApp
+- extendedWaitUntil:
+    visible:
+      text: "Overview"
+    timeout: 15000
+- tapOn:
+    id: "add-entry"
+- extendedWaitUntil:
+    visible:
+      text: "Add Entry"
+    timeout: 5000
+- tapOn:
+    id: "input-value"
+- inputText: "75"
+- tapOn:
+    id: "save-entry"
+- extendedWaitUntil:
+    visible:
+      text: "Overview"
+    timeout: 5000

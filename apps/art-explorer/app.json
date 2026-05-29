@@ -1,0 +1,16 @@
+{
+  "expo": {
+    "name": "art-explorer",
+    "slug": "art-explorer",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "userInterfaceStyle": "light",
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.iosappfactory.artexplorer"
+    },
+    "plugins": [
+      "expo-asset"
+    ]
+  }
+}

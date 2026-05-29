@@ -1,0 +1,16 @@
+{
+  "expo": {
+    "name": "mood-journal",
+    "slug": "mood-journal",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "userInterfaceStyle": "light",
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.iosappfactory.moodjournal"
+    },
+    "plugins": [
+      "expo-asset"
+    ]
+  }
+}

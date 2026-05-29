@@ -1,0 +1,14 @@
+{
+  "name": "focusflow-pomodoro-timer-with-work-brea",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "start": "expo start",
+    "ios": "expo start --ios",
+    "tunnel": "expo start --tunnel"
+  },
+  "dependencies": {
+    "expo": "~54.0.0"
+  },
+  "private": true
+}

@@ -1,0 +1,33 @@
+appId: com.iosappfactory.recipeexplorer
+---
+- launchApp
+- extendedWaitUntil:
+    visible:
+      text: "Items"
+    timeout: 15000
+- tapOn:
+    id: "add-item"
+- extendedWaitUntil:
+    visible:
+      text: "Add Item"
+    timeout: 5000
+- tapOn:
+    id: "input-name"
+- inputText: "DetailTest"
+- tapOn:
+    id: "input-value"
+- inputText: "42"
+- tapOn:
+    id: "save-item"
+- extendedWaitUntil:
+    visible:
+      text: "Items"
+    timeout: 5000
+- tapOn:
+    text: "DetailTest"
+- extendedWaitUntil:
+    visible:
+      text: "Detail"
+    timeout: 5000
+- assertVisible:
+    text: "Detail"

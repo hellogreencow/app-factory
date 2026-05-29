@@ -1,0 +1,31 @@
+{
+  "expo": {
+    "name": "SettleSnap",
+    "slug": "settlesnap",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "userInterfaceStyle": "automatic",
+    "newArchEnabled": true,
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.iosappfactory.settlesnap",
+      "infoPlist": {
+        "NSLocationWhenInUseUsageDescription": "This app uses your location to show nearby content.",
+        "NSCameraUsageDescription": "This app uses the camera to capture photos.",
+        "ITSAppUsesNonExemptEncryption": false
+      }
+    },
+    "plugins": [
+      "expo-asset",
+      "expo-location",
+      "expo-camera",
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "Allow access to select photos."
+        }
+      ],
+      "expo-font"
+    ]
+  }
+}

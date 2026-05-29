@@ -1,0 +1,9 @@
+{
+  "name": "Mood Journal",
+  "description": "Track your emotions and reflect on your mental well-being.",
+  "features": [
+    "add-item",
+    "detail-view",
+    "settings"
+  ]
+}

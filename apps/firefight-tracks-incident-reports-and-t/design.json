@@ -1,0 +1,553 @@
+{
+  "name": "FireFight",
+  "description": "Track fire incident reports and team status with real-time mapping",
+  "style": {
+    "theme": "dark",
+    "backgroundColor": "#0a0a0a",
+    "cardColor": "#1a1a1a",
+    "textColor": "#f5f5f5",
+    "accentColor": "#ff4500",
+    "secondaryAccent": "#ffa500",
+    "borderRadius": 12
+  },
+  "navigation": {
+    "type": "bottom-tabs",
+    "tabs": [
+      {
+        "name": "Map",
+        "icon": "Ionicons/map",
+        "screen": "IncidentMap"
+      },
+      {
+        "name": "Incidents",
+        "icon": "Ionicons/flame",
+        "screen": "IncidentList"
+      },
+      {
+        "name": "Team",
+        "icon": "Ionicons/people",
+        "screen": "TeamStatus"
+      },
+      {
+        "name": "Profile",
+        "icon": "Ionicons/person",
+        "screen": "Profile"
+      }
+    ]
+  },
+  "dataModel": {
+    "entities": [
+      {
+        "name": "Incident",
+        "storageKey": "@firefight_incidents",
+        "fields": [
+          {
+            "name": "id",
+            "type": "string"
+          },
+          {
+            "name": "title",
+            "type": "string"
+          },
+          {
+            "name": "description",
+            "type": "string"
+          },
+          {
+            "name": "severity",
+            "type": "string"
+          },
+          {
+            "name": "status",
+            "type": "string"
+          },
+          {
+            "name": "latitude",
+            "type": "number"
+          },
+          {
+            "name": "longitude",
+            "type": "number"
+          },
+          {
+            "name": "address",
+            "type": "string"
+          },
+          {
+            "name": "reportedBy",
+            "type": "string"
+          },
+          {
+            "name": "assignedTeam",
+            "type": "array"
+          },
+          {
+            "name": "createdAt",
+            "type": "number"
+          },
+          {
+            "name": "updatedAt",
+            "type": "number"
+          },
+          {
+            "name": "images",
+            "type": "array"
+          }
+        ]
+      },
+      {
+        "name": "TeamMember",
+        "storageKey": "@firefight_team",
+        "fields": [
+          {
+            "name": "id",
+            "type": "string"
+          },
+          {
+            "name": "name",
+            "type": "string"
+          },
+          {
+            "name": "role",
+            "type": "string"
+          },
+          {
+            "name": "status",
+            "type": "string"
+          },
+          {
+            "name": "latitude",
+            "type": "number"
+          },
+          {
+            "name": "longitude",
+            "type": "number"
+          },
+          {
+            "name": "lastUpdate",
+            "type": "number"
+          },
+          {
+            "name": "assignedIncident",
+            "type": "string"
+          },
+          {
+            "name": "contact",
+            "type": "string"
+          }
+        ]
+      },
+      {
+        "name": "UserProfile",
+        "storageKey": "@firefight_profile",
+        "fields": [
+          {
+            "name": "id",
+            "type": "string"
+          },
+          {
+            "name": "name",
+            "type": "string"
+          },
+          {
+            "name": "role",
+            "type": "string"
+          },
+          {
+            "name": "badge",
+            "type": "string"
+          },
+          {
+            "name": "station",
+            "type": "string"
+          },
+          {
+            "name": "contact",
+            "type": "string"
+          }
+        ]
+      }
+    ]
+  },
+  "screens": [
+    {
+      "name": "IncidentMap",
+      "file": "src/screens/IncidentMap.js",
+      "purpose": "Live map showing active incidents and team locations",
+      "features": [
+        {
+          "name": "live-map",
+          "description": "Interactive map with incident markers color-coded by severity",
+          "libraries": [
+            "react-native-maps",
+            "@expo/vector-icons"
+          ]
+        },
+        {
+          "name": "team-markers",
+          "description": "Real-time team member location markers with status indicators",
+          "libraries": [
+            "react-native-maps",
+            "@expo/vector-icons",
+            "expo-location"
+          ]
+        },
+        {
+          "name": "incident-callouts",
+          "description": "Tap markers to view incident details in callout bubbles",
+          "libraries": [
+            "react-native-maps",
+            "@expo/vector-icons"
+          ]
+        },
+        {
+          "name": "add-incident-fab",
+          "description": "Floating action button to report new incident at current location",
+          "libraries": [
+            "@expo/vector-icons",
+            "expo-location",
+            "expo-haptics"
+          ]
+        },
+        {
+          "name": "filter-toggle",
+          "description": "Toggle visibility of incidents by severity and team members",
+          "libraries": [
+            "@expo/vector-icons",
+            "react-native-reanimated"
+          ]
+        }
+      ],
+      "layout": "Full-screen MapView with floating controls, filter chips at top, FAB bottom-right"
+    },
+    {
+      "name": "IncidentList",
+      "file": "src/screens/IncidentList.js",
+      "purpose": "Scrollable list of all incidents with filtering and sorting",
+      "features": [
+        {
+          "name": "incident-cards",
+          "description": "Gradient cards showing incident severity, status, time, and location",
+          "libraries": [
+            "expo-linear-gradient",
+            "@expo/vector-icons",
+            "date-fns"
+          ]
+        },
+        {
+          "name": "severity-filter",
+          "description": "Horizontal filter chips for low, medium, high, critical incidents",
+          "libraries": [
+            "@expo/vector-icons",
+            "react-native-gesture-handler"
+          ]
+        },
+        {
+          "name": "status-tabs",
+          "description": "Tabs for active, resolved, archived incidents with counts",
+          "libraries": [
+            "@expo/vector-icons",
+            "react-native-reanimated"
+          ]
+        },
+        {
+          "name": "search-bar",
+          "description": "Search incidents by title, address, or assigned team",
+          "libraries": [
+            "@expo/vector-icons"
+          ]
+        },
+        {
+          "name": "swipe-actions",
+          "description": "Swipe left for quick status update or archive action",
+          "libraries": [
+            "react-native-gesture-handler",
+            "@expo/vector-icons",
+            "expo-haptics"
+          ]
+        }
+      ],
+      "layout": "Search bar and filter chips at top, tabbed content area, scrollable incident cards below"
+    },
+    {
+      "name": "IncidentDetail",
+      "file": "src/screens/IncidentDetail.js",
+      "purpose": "Full incident details with images, timeline, and team assignment",
+      "features": [
+        {
+          "name": "incident-header",
+          "description": "Gradient header with severity badge, status, and timestamp",
+          "libraries": [
+            "expo-linear-gradient",
+            "@expo/vector-icons",
+            "date-fns"
+          ]
+        },
+        {
+          "name": "image-gallery",
+          "description": "Horizontal scrollable gallery of incident photos with zoom",
+          "libraries": [
+            "expo-image-picker",
+            "@expo/vector-icons",
+            "react-native-gesture-handler"
+          ]
+        },
+        {
+          "name": "location-preview",
+          "description": "Small map preview with address and navigation button",
+          "libraries": [
+            "react-native-maps",
+            "@expo/vector-icons"
+          ]
+        },
+        {
+          "name": "team-assignment",
+          "description": "List of assigned team members with status and contact options",
+          "libraries": [
+            "@expo/vector-icons"
+          ]
+        },
+        {
+          "name": "status-update",
+          "description": "Quick action buttons to update incident status with haptic feedback",
+          "libraries": [
+            "@expo/vector-icons",
+            "expo-haptics"
+          ]
+        },
+        {
+          "name": "share-report",
+          "description": "Share incident details via system share sheet",
+          "libraries": [
+            "expo-sharing",
+            "@expo/vector-icons"
+          ]
+        }
+      ],
+      "layout": "Scrollable content with header, image gallery, map, description, team section, action buttons at bottom"
+    },
+    {
+      "name": "TeamStatus",
+      "file": "src/screens/TeamStatus.js",
+      "purpose": "Overview of all team members with status and assignments",
+      "features": [
+        {
+          "name": "team-grid",
+          "description": "Grid of team member cards with avatar, name, status badge",
+          "libraries": [
+            "@expo/vector-icons",
+            "date-fns"
+          ]
+        },
+        {
+          "name": "status-filter",
+          "description": "Filter by available, on-duty, off-duty, emergency status",
+          "libraries": [
+            "@expo/vector-icons"
+          ]
+        },
+        {
+          "name": "assignment-view",
+          "description": "Shows current incident assignment and last location update time",
+          "libraries": [
+            "@expo/vector-icons",
+            "date-fns"
+          ]
+        },
+        {
+          "name": "quick-contact",
+          "description": "Long-press card for contact options with haptic feedback",
+          "libraries": [
+            "react-native-gesture-handler",
+            "@expo/vector-icons",
+            "expo-haptics"
+          ]
+        },
+        {
+          "name": "stats-header",
+          "description": "Summary cards showing total team, available, and on-duty counts",
+          "libraries": [
+            "@expo/vector-icons",
+            "expo-linear-gradient"
+          ]
+        }
+      ],
+      "layout": "Stats cards at top, filter chips below, scrollable grid of team member cards"
+    },
+    {
+      "name": "AddIncident",
+      "file": "src/screens/AddIncident.js",
+      "purpose": "Form to create new incident report with location and photos",
+      "features": [
+        {
+          "name": "incident-form",
+          "description": "Input fields for title, description, severity selection with validation",
+          "libraries": [
+            "@expo/vector-icons"
+          ]
+        },
+        {
+          "name": "location-picker",
+          "description": "Auto-fill current location or select custom location on map",
+          "libraries": [
+            "expo-location",
+            "react-native-maps",
+            "@expo/vector-icons"
+          ]
+        },
+        {
+          "name": "photo-capture",
+          "description": "Camera button and gallery picker to add incident photos",
+          "libraries": [
+            "expo-camera",
+            "expo-image-picker",
+            "@expo/vector-icons"
+          ]
+        },
+        {
+          "name": "severity-selector",
+          "description": "Visual severity picker with color-coded options and icons",
+          "libraries": [
+            "@expo/vector-icons",
+            "expo-linear-gradient"
+          ]
+        },
+        {
+          "name": "team-assign",
+          "description": "Multi-select available team members to assign to incident",
+          "libraries": [
+            "@expo/vector-icons"
+          ]
+        },
+        {
+          "name": "submit-action",
+          "description": "Submit button with loading state and haptic confirmation",
+          "libraries": [
+            "@expo/vector-icons",
+            "expo-haptics"
+          ]
+        }
+      ],
+      "layout": "Scrollable form with sections for details, location map, photos, severity, team assignment, submit button"
+    },
+    {
+      "name": "TeamDetail",
+      "file": "src/screens/TeamDetail.js",
+      "purpose": "Individual team member profile with location and incident history",
+      "features": [
+        {
+          "name": "member-header",
+          "description": "Profile card with name, role, badge, status with gradient background",
+          "libraries": [
+            "expo-linear-gradient",
+            "@expo/vector-icons"
+          ]
+        },
+        {
+          "name": "location-map",
+          "description": "Live location on map with last update timestamp",
+          "libraries": [
+            "react-native-maps",
+            "expo-location",
+            "@expo/vector-icons",
+            "date-fns"
+          ]
+        },
+        {
+          "name": "current-assignment",
+          "description": "Active incident assignment card with quick navigation link",
+          "libraries": [
+            "@expo/vector-icons"
+          ]
+        },
+        {
+          "name": "incident-history",
+          "description": "Timeline of past incidents handled by team member",
+          "libraries": [
+            "@expo/vector-icons",
+            "date-fns"
+          ]
+        },
+        {
+          "name": "contact-actions",
+          "description": "Quick action buttons for call, message, or locate member",
+          "libraries": [
+            "@expo/vector-icons",
+            "expo-haptics"
+          ]
+        }
+      ],
+      "layout": "Header profile card, live map section, current assignment, scrollable incident history timeline"
+    },
+    {
+      "name": "Profile",
+      "file": "src/screens/Profile.js",
+      "purpose": "User profile settings and app preferences",
+      "features": [
+        {
+          "name": "profile-card",
+          "description": "User info card with name, role, badge, station details",
+          "libraries": [
+            "@expo/vector-icons",
+            "expo-linear-gradient"
+          ]
+        },
+        {
+          "name": "edit-profile",
+          "description": "Edit user information with validation and save confirmation",
+          "libraries": [
+            "@expo/vector-icons",
+            "expo-haptics"
+          ]
+        },
+        {
+          "name": "notification-settings",
+          "description": "Toggle switches for incident alerts and team status notifications",
+          "libraries": [
+            "@expo/vector-icons"
+          ]
+        },
+        {
+          "name": "stats-summary",
+          "description": "Personal stats showing incidents handled and hours on duty",
+          "libraries": [
+            "@expo/vector-icons",
+            "react-native-svg"
+          ]
+        },
+        {
+          "name": "data-export",
+          "description": "Export incident reports and activity logs to file",
+          "libraries": [
+            "expo-file-system",
+            "expo-sharing",
+            "@expo/vector-icons"
+          ]
+        }
+      ],
+      "layout": "Profile header card, editable info section, settings toggles, stats cards, export options at bottom"
+    }
+  ],
+  "context": {
+    "file": "src/context/FireFightContext.js",
+    "hook": "useFireFight",
+    "methods": [
+      "addIncident",
+      "updateIncident",
+      "deleteIncident",
+      "addTeamMember",
+      "updateTeamStatus",
+      "assignTeam",
+      "updateProfile"
+    ],
+    "computed": [
+      "activeIncidents",
+      "resolvedIncidents",
+      "availableTeam",
+      "onDutyTeam",
+      "criticalIncidents",
+      "incidentStats",
+      "teamStats"
+    ]
+  }
+}

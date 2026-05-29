@@ -1,0 +1,275 @@
+{
+  "name": "PoopTrack",
+  "description": "Track your dog's poops with ease and precision.",
+  "style": {
+    "theme": "dark",
+    "backgroundColor": "#121212",
+    "cardColor": "#212121",
+    "textColor": "#FFFFFF",
+    "accentColor": "#03DAC5",
+    "secondaryAccent": "#BB86FC",
+    "borderRadius": 8
+  },
+  "navigation": {
+    "type": "bottom-tabs",
+    "tabs": [
+      {
+        "name": "Home",
+        "icon": "Ionicons/home",
+        "screen": "HomeScreen"
+      },
+      {
+        "name": "Map",
+        "icon": "Ionicons/map",
+        "screen": "MapScreen"
+      },
+      {
+        "name": "Stats",
+        "icon": "Ionicons/stats-chart",
+        "screen": "StatsScreen"
+      },
+      {
+        "name": "Settings",
+        "icon": "Ionicons/settings",
+        "screen": "SettingsScreen"
+      }
+    ]
+  },
+  "dataModel": {
+    "entities": [
+      {
+        "name": "Poop",
+        "storageKey": "@pooptrack_poops",
+        "fields": [
+          {
+            "name": "id",
+            "type": "string"
+          },
+          {
+            "name": "date",
+            "type": "number"
+          },
+          {
+            "name": "time",
+            "type": "string"
+          },
+          {
+            "name": "location",
+            "type": "object"
+          },
+          {
+            "name": "consistency",
+            "type": "string"
+          },
+          {
+            "name": "color",
+            "type": "string"
+          },
+          {
+            "name": "notes",
+            "type": "string"
+          },
+          {
+            "name": "photo",
+            "type": "string"
+          }
+        ]
+      }
+    ]
+  },
+  "screens": [
+    {
+      "name": "HomeScreen",
+      "file": "src/screens/HomeScreen.js",
+      "purpose": "Display a list of recorded poops.",
+      "features": [
+        {
+          "name": "list-poops",
+          "description": "Show a list of dog poop entries.",
+          "libraries": [
+            "react-native",
+            "@expo/vector-icons",
+            "@react-native-async-storage/async-storage",
+            "date-fns"
+          ]
+        },
+        {
+          "name": "add-poop",
+          "description": "Add a new dog poop entry.",
+          "libraries": [
+            "react-native",
+            "@expo/vector-icons",
+            "@react-navigation/native"
+          ]
+        }
+      ],
+      "layout": "List of poop entries, add button."
+    },
+    {
+      "name": "AddPoopScreen",
+      "file": "src/screens/AddPoopScreen.js",
+      "purpose": "Create a new poop entry.",
+      "features": [
+        {
+          "name": "form-input",
+          "description": "Capture poop details (date, time, consistency, etc.).",
+          "libraries": [
+            "react-native",
+            "@expo/vector-icons",
+            "expo-location",
+            "expo-image-picker"
+          ]
+        },
+        {
+          "name": "save-poop",
+          "description": "Save the poop entry to storage.",
+          "libraries": [
+            "react-native",
+            "@react-native-async-storage/async-storage",
+            "expo-location"
+          ]
+        },
+        {
+          "name": "take-photo",
+          "description": "Take a photo of the poop.",
+          "libraries": [
+            "react-native",
+            "expo-camera",
+            "@expo/vector-icons"
+          ]
+        }
+      ],
+      "layout": "Form with input fields, save button."
+    },
+    {
+      "name": "MapScreen",
+      "file": "src/screens/MapScreen.js",
+      "purpose": "Display poop locations on a map.",
+      "features": [
+        {
+          "name": "map-display",
+          "description": "Show a map with poop location markers.",
+          "libraries": [
+            "react-native",
+            "react-native-maps",
+            "expo-location",
+            "@expo/vector-icons"
+          ]
+        },
+        {
+          "name": "location-access",
+          "description": "Get user's current location.",
+          "libraries": [
+            "react-native",
+            "expo-location",
+            "@expo/vector-icons"
+          ]
+        }
+      ],
+      "layout": "Full-screen map with poop markers."
+    },
+    {
+      "name": "StatsScreen",
+      "file": "src/screens/StatsScreen.js",
+      "purpose": "Display statistics about dog poops.",
+      "features": [
+        {
+          "name": "stat-display",
+          "description": "Show statistics on poop frequency, consistency, etc.",
+          "libraries": [
+            "react-native",
+            "@expo/vector-icons",
+            "react-native-svg",
+            "@react-native-async-storage/async-storage",
+            "date-fns"
+          ]
+        },
+        {
+          "name": "chart-display",
+          "description": "Display data in chart format.",
+          "libraries": [
+            "react-native",
+            "react-native-svg",
+            "@expo/vector-icons"
+          ]
+        }
+      ],
+      "layout": "Cards with statistics, charts."
+    },
+    {
+      "name": "SettingsScreen",
+      "file": "src/screens/SettingsScreen.js",
+      "purpose": "Configure app settings.",
+      "features": [
+        {
+          "name": "theme-toggle",
+          "description": "Switch between light and dark themes.",
+          "libraries": [
+            "react-native",
+            "@expo/vector-icons"
+          ]
+        },
+        {
+          "name": "data-management",
+          "description": "Export or clear all poop data.",
+          "libraries": [
+            "react-native",
+            "@expo/vector-icons",
+            "@react-native-async-storage/async-storage",
+            "expo-sharing",
+            "expo-file-system"
+          ]
+        }
+      ],
+      "layout": "List of settings options."
+    },
+    {
+      "name": "EditPoopScreen",
+      "file": "src/screens/EditPoopScreen.js",
+      "purpose": "Edit an existing poop entry.",
+      "features": [
+        {
+          "name": "form-input",
+          "description": "Edit poop details (date, time, consistency, etc.).",
+          "libraries": [
+            "react-native",
+            "@expo/vector-icons",
+            "expo-location",
+            "expo-image-picker"
+          ]
+        },
+        {
+          "name": "update-poop",
+          "description": "Update the poop entry in storage.",
+          "libraries": [
+            "react-native",
+            "@react-native-async-storage/async-storage",
+            "expo-location"
+          ]
+        },
+        {
+          "name": "delete-poop",
+          "description": "Delete the poop entry.",
+          "libraries": [
+            "react-native",
+            "@react-native-async-storage/async-storage"
+          ]
+        }
+      ],
+      "layout": "Form with input fields, save and delete buttons."
+    }
+  ],
+  "context": {
+    "file": "src/context/AppContext.js",
+    "hook": "usePoopData",
+    "methods": [
+      "addPoop",
+      "deletePoop",
+      "updatePoop"
+    ],
+    "computed": [
+      "filteredPoops",
+      "poopStats"
+    ]
+  }
+}

@@ -1,0 +1,6 @@
+appId: host.exp.Exponent
+---
+- assertVisible: "Map"
+- tapOn: "Dares"
+- assertVisible: "Dares"
+- takeScreenshot: test-dares

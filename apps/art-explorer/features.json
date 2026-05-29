@@ -1,0 +1,11 @@
+{
+  "name": "art-explorer",
+  "description": "art explorer app with gamified focus",
+  "features": [
+    "browse",
+    "item-detail",
+    "bookmarks",
+    "settings"
+  ],
+  "architecture": "reference"
+}

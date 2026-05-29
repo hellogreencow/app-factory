@@ -1,0 +1,270 @@
+{
+  "name": "PricePerUse",
+  "description": "Track the cost per use of your belongings and see their value decrease over time.",
+  "style": {
+    "theme": "dark",
+    "backgroundColor": "#121212",
+    "cardColor": "#1E1E1E",
+    "textColor": "#FFFFFF",
+    "accentColor": "#007AFF",
+    "secondaryAccent": "#34C759",
+    "borderRadius": 12
+  },
+  "navigation": {
+    "type": "bottom-tabs",
+    "tabs": [
+      {
+        "name": "Items",
+        "icon": "Ionicons/pricetag-outline",
+        "screen": "ItemsScreen"
+      },
+      {
+        "name": "Add Item",
+        "icon": "Ionicons/add-circle-outline",
+        "screen": "AddItemScreen"
+      },
+      {
+        "name": "Statistics",
+        "icon": "Ionicons/stats-chart-outline",
+        "screen": "StatisticsScreen"
+      },
+      {
+        "name": "Settings",
+        "icon": "Ionicons/settings-outline",
+        "screen": "SettingsScreen"
+      }
+    ]
+  },
+  "dataModel": {
+    "entities": [
+      {
+        "name": "Item",
+        "storageKey": "@price_per_use_items",
+        "fields": [
+          {
+            "name": "id",
+            "type": "string"
+          },
+          {
+            "name": "name",
+            "type": "string"
+          },
+          {
+            "name": "purchasePrice",
+            "type": "number"
+          },
+          {
+            "name": "uses",
+            "type": "number"
+          },
+          {
+            "name": "datePurchased",
+            "type": "string"
+          }
+        ]
+      },
+      {
+        "name": "UseLog",
+        "storageKey": "@price_per_use_use_logs",
+        "fields": [
+          {
+            "name": "id",
+            "type": "string"
+          },
+          {
+            "name": "itemId",
+            "type": "string"
+          },
+          {
+            "name": "timestamp",
+            "type": "string"
+          }
+        ]
+      }
+    ]
+  },
+  "screens": [
+    {
+      "name": "ItemsScreen",
+      "file": "src/screens/ItemsScreen.js",
+      "purpose": "Display a list of added items and their current price per use.",
+      "features": [
+        {
+          "name": "item-list",
+          "description": "Show items in a scrollable list, sorted by name.",
+          "libraries": [
+            "react-native",
+            "@expo/vector-icons",
+            "react-native-gesture-handler"
+          ]
+        },
+        {
+          "name": "item-details-navigation",
+          "description": "Tap an item to view more detailed info.",
+          "libraries": [
+            "react-navigation/native",
+            "react-navigation/native-stack",
+            "@expo/vector-icons"
+          ]
+        },
+        {
+          "name": "delete-item",
+          "description": "Swipe to delete an item from the list.",
+          "libraries": [
+            "react-native",
+            "react-native-gesture-handler",
+            "@expo/vector-icons"
+          ]
+        }
+      ],
+      "layout": "Vertical list of items with swipeable delete."
+    },
+    {
+      "name": "AddItemScreen",
+      "file": "src/screens/AddItemScreen.js",
+      "purpose": "Allow users to add new items with a name, price, and date purchased.",
+      "features": [
+        {
+          "name": "add-item-form",
+          "description": "Form to input item details (name, price, date).",
+          "libraries": [
+            "react-native",
+            "@expo/vector-icons",
+            "date-fns"
+          ]
+        },
+        {
+          "name": "submit-item",
+          "description": "Save the new item to local storage.",
+          "libraries": [
+            "react-native",
+            "@react-native-async-storage/async-storage"
+          ]
+        },
+        {
+          "name": "date-picker",
+          "description": "Select purchase date using a date picker.",
+          "libraries": [
+            "react-native",
+            "date-fns"
+          ]
+        }
+      ],
+      "layout": "Form with input fields and a date picker."
+    },
+    {
+      "name": "StatisticsScreen",
+      "file": "src/screens/StatisticsScreen.js",
+      "purpose": "Display charts and graphs showing price per use trends over time.",
+      "features": [
+        {
+          "name": "price-chart",
+          "description": "Chart showing the price per use decreasing over time.",
+          "libraries": [
+            "react-native",
+            "react-native-svg",
+            "date-fns"
+          ]
+        },
+        {
+          "name": "total-spent",
+          "description": "Display the total amount spent on all items.",
+          "libraries": [
+            "react-native",
+            "@react-native-async-storage/async-storage"
+          ]
+        },
+        {
+          "name": "most-used-item",
+          "description": "Display the item with the most uses.",
+          "libraries": [
+            "react-native",
+            "@react-native-async-storage/async-storage"
+          ]
+        }
+      ],
+      "layout": "Displays a chart and summary statistics."
+    },
+    {
+      "name": "SettingsScreen",
+      "file": "src/screens/SettingsScreen.js",
+      "purpose": "Allow users to customize app settings (theme, notifications).",
+      "features": [
+        {
+          "name": "theme-toggle",
+          "description": "Switch between light and dark themes.",
+          "libraries": [
+            "react-native",
+            "@expo/vector-icons"
+          ]
+        },
+        {
+          "name": "notification-settings",
+          "description": "Configure notification preferences.",
+          "libraries": [
+            "react-native",
+            "@expo/vector-icons"
+          ]
+        },
+        {
+          "name": "data-export",
+          "description": "Export data to a file.",
+          "libraries": [
+            "react-native",
+            "expo-file-system",
+            "expo-sharing"
+          ]
+        }
+      ],
+      "layout": "List of customizable settings."
+    },
+    {
+      "name": "ItemDetailsScreen",
+      "file": "src/screens/ItemDetailsScreen.js",
+      "purpose": "Show detailed information about a specific item and log new uses.",
+      "features": [
+        {
+          "name": "item-info",
+          "description": "Display item name, purchase price, and current price per use.",
+          "libraries": [
+            "react-native",
+            "@expo/vector-icons"
+          ]
+        },
+        {
+          "name": "log-use-button",
+          "description": "Button to log a new use for the item.",
+          "libraries": [
+            "react-native",
+            "expo-haptics"
+          ]
+        },
+        {
+          "name": "use-log-list",
+          "description": "List all use logs for the item.",
+          "libraries": [
+            "react-native",
+            "date-fns"
+          ]
+        }
+      ],
+      "layout": "Displays item details and a list of use logs."
+    }
+  ],
+  "context": {
+    "file": "src/context/AppContext.js",
+    "hook": "useAppData",
+    "methods": [
+      "addItem",
+      "deleteItem",
+      "updateItem",
+      "logUse"
+    ],
+    "computed": [
+      "filteredItems",
+      "itemStats",
+      "items",
+      "useLogs"
+    ]
+  }
+}

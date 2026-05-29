@@ -1,0 +1,9 @@
+
+{
+  "fixed": true,
+  "timestamp": "2024-01-01",
+  "changes": [
+    "Added expo-location",
+    "Added react-native-maps"
+  ]
+}

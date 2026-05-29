@@ -1,0 +1,16 @@
+{
+  "expo": {
+    "name": "productivity-tracker",
+    "slug": "productivity-tracker",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "userInterfaceStyle": "light",
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.iosappfactory.productivitytracker"
+    },
+    "plugins": [
+      "expo-asset"
+    ]
+  }
+}

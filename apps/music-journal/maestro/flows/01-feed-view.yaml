@@ -1,0 +1,11 @@
+appId: com.iosappfactory.musicjournal
+---
+- launchApp
+- extendedWaitUntil:
+    visible:
+      text: "Feed"
+    timeout: 15000
+- assertVisible:
+    text: "Feed"
+- assertVisible:
+    id: "compose-btn"

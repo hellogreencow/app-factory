@@ -1,0 +1,479 @@
+{
+  "name": "ArtSpotter",
+  "description": "Discover, catalog, and share public art installations with interactive maps and camera integration",
+  "style": {
+    "theme": "dark",
+    "backgroundColor": "#0A0E1A",
+    "cardColor": "#1A1F2E",
+    "textColor": "#E8EAF0",
+    "accentColor": "#6C5CE7",
+    "secondaryAccent": "#FD79A8",
+    "borderRadius": 12
+  },
+  "navigation": {
+    "type": "bottom-tabs",
+    "tabs": [
+      {
+        "name": "Map",
+        "icon": "Ionicons/map",
+        "screen": "MapView"
+      },
+      {
+        "name": "Discover",
+        "icon": "Ionicons/compass",
+        "screen": "Discover"
+      },
+      {
+        "name": "Add",
+        "icon": "Ionicons/add-circle",
+        "screen": "AddArt"
+      },
+      {
+        "name": "Gallery",
+        "icon": "Ionicons/grid",
+        "screen": "Gallery"
+      },
+      {
+        "name": "Profile",
+        "icon": "Ionicons/person",
+        "screen": "Profile"
+      }
+    ]
+  },
+  "dataModel": {
+    "entities": [
+      {
+        "name": "ArtInstallation",
+        "storageKey": "@artspotter_installations",
+        "fields": [
+          {
+            "name": "id",
+            "type": "string"
+          },
+          {
+            "name": "title",
+            "type": "string"
+          },
+          {
+            "name": "artist",
+            "type": "string"
+          },
+          {
+            "name": "description",
+            "type": "string"
+          },
+          {
+            "name": "imageUri",
+            "type": "string"
+          },
+          {
+            "name": "latitude",
+            "type": "number"
+          },
+          {
+            "name": "longitude",
+            "type": "number"
+          },
+          {
+            "name": "category",
+            "type": "string"
+          },
+          {
+            "name": "dateAdded",
+            "type": "string"
+          },
+          {
+            "name": "userId",
+            "type": "string"
+          },
+          {
+            "name": "likes",
+            "type": "number"
+          },
+          {
+            "name": "visits",
+            "type": "number"
+          }
+        ]
+      },
+      {
+        "name": "UserProfile",
+        "storageKey": "@artspotter_profile",
+        "fields": [
+          {
+            "name": "id",
+            "type": "string"
+          },
+          {
+            "name": "username",
+            "type": "string"
+          },
+          {
+            "name": "avatar",
+            "type": "string"
+          },
+          {
+            "name": "bio",
+            "type": "string"
+          },
+          {
+            "name": "joinedDate",
+            "type": "string"
+          },
+          {
+            "name": "savedArt",
+            "type": "array"
+          }
+        ]
+      },
+      {
+        "name": "Visit",
+        "storageKey": "@artspotter_visits",
+        "fields": [
+          {
+            "name": "id",
+            "type": "string"
+          },
+          {
+            "name": "artId",
+            "type": "string"
+          },
+          {
+            "name": "userId",
+            "type": "string"
+          },
+          {
+            "name": "visitDate",
+            "type": "string"
+          },
+          {
+            "name": "notes",
+            "type": "string"
+          }
+        ]
+      }
+    ]
+  },
+  "screens": [
+    {
+      "name": "MapView",
+      "file": "src/screens/MapView.js",
+      "purpose": "Interactive map displaying nearby art installations with location tracking",
+      "features": [
+        {
+          "name": "interactive-map",
+          "description": "Display art markers on map with user location tracking and clustering",
+          "libraries": [
+            "react-native-maps",
+            "expo-location",
+            "@expo/vector-icons"
+          ]
+        },
+        {
+          "name": "marker-callouts",
+          "description": "Tap markers to preview art details with image and quick actions",
+          "libraries": [
+            "react-native-maps",
+            "@expo/vector-icons"
+          ]
+        },
+        {
+          "name": "location-permission",
+          "description": "Request and manage location permissions for nearby art discovery",
+          "libraries": [
+            "expo-location",
+            "expo-haptics"
+          ]
+        },
+        {
+          "name": "map-filters",
+          "description": "Filter visible art by category with animated filter chips",
+          "libraries": [
+            "react-native-reanimated",
+            "@expo/vector-icons"
+          ]
+        },
+        {
+          "name": "navigation-routing",
+          "description": "Get directions to selected art installation using native maps",
+          "libraries": [
+            "expo-location",
+            "@expo/vector-icons"
+          ]
+        }
+      ],
+      "layout": "Full-screen MapView with floating search bar, filter chips, and location button overlay"
+    },
+    {
+      "name": "Discover",
+      "file": "src/screens/Discover.js",
+      "purpose": "Browse curated art feed with search and filtering options",
+      "features": [
+        {
+          "name": "art-feed",
+          "description": "Scrollable grid of art installations with images and metadata",
+          "libraries": [
+            "@expo/vector-icons",
+            "react-native-reanimated"
+          ]
+        },
+        {
+          "name": "search-bar",
+          "description": "Search art by title, artist, or category with debounced input",
+          "libraries": [
+            "@expo/vector-icons",
+            "@react-native-async-storage/async-storage"
+          ]
+        },
+        {
+          "name": "category-filters",
+          "description": "Horizontal scrolling category chips with haptic feedback on selection",
+          "libraries": [
+            "expo-haptics",
+            "@expo/vector-icons",
+            "react-native-gesture-handler"
+          ]
+        },
+        {
+          "name": "sort-options",
+          "description": "Sort by distance, date added, popularity with animated transitions",
+          "libraries": [
+            "react-native-reanimated",
+            "@expo/vector-icons"
+          ]
+        },
+        {
+          "name": "pull-refresh",
+          "description": "Pull-to-refresh gesture to reload art installations feed",
+          "libraries": [
+            "react-native-gesture-handler",
+            "expo-haptics"
+          ]
+        }
+      ],
+      "layout": "Search bar at top, category filters below, grid of art cards with images and titles"
+    },
+    {
+      "name": "AddArt",
+      "file": "src/screens/AddArt.js",
+      "purpose": "Capture and catalog new art with camera and location data",
+      "features": [
+        {
+          "name": "camera-capture",
+          "description": "Take photo of art or select from gallery with preview",
+          "libraries": [
+            "expo-camera",
+            "expo-image-picker",
+            "@expo/vector-icons"
+          ]
+        },
+        {
+          "name": "auto-location",
+          "description": "Automatically capture GPS coordinates when adding new art installation",
+          "libraries": [
+            "expo-location",
+            "@expo/vector-icons"
+          ]
+        },
+        {
+          "name": "form-input",
+          "description": "Input title, artist, description, and category with validation",
+          "libraries": [
+            "@expo/vector-icons",
+            "expo-haptics"
+          ]
+        },
+        {
+          "name": "image-preview",
+          "description": "Preview captured image with retake option before saving",
+          "libraries": [
+            "@expo/vector-icons",
+            "react-native-reanimated"
+          ]
+        },
+        {
+          "name": "save-installation",
+          "description": "Save new art to local storage with success animation",
+          "libraries": [
+            "@react-native-async-storage/async-storage",
+            "expo-haptics",
+            "@expo/vector-icons"
+          ]
+        }
+      ],
+      "layout": "Camera viewfinder or image preview at top, form fields below with save button"
+    },
+    {
+      "name": "Gallery",
+      "file": "src/screens/Gallery.js",
+      "purpose": "Personal collection of saved and visited art installations",
+      "features": [
+        {
+          "name": "saved-grid",
+          "description": "Grid layout of user's saved art with thumbnail images",
+          "libraries": [
+            "@expo/vector-icons",
+            "react-native-reanimated"
+          ]
+        },
+        {
+          "name": "visit-tracking",
+          "description": "Mark installations as visited with date and notes tracking",
+          "libraries": [
+            "date-fns",
+            "@react-native-async-storage/async-storage",
+            "@expo/vector-icons"
+          ]
+        },
+        {
+          "name": "collection-stats",
+          "description": "Display total saved, visited, and favorite art count statistics",
+          "libraries": [
+            "@expo/vector-icons",
+            "react-native-svg"
+          ]
+        },
+        {
+          "name": "export-collection",
+          "description": "Share collection summary or individual art via social platforms",
+          "libraries": [
+            "expo-sharing",
+            "expo-file-system",
+            "@expo/vector-icons"
+          ]
+        },
+        {
+          "name": "swipe-actions",
+          "description": "Swipe gestures to remove or favorite art installations quickly",
+          "libraries": [
+            "react-native-gesture-handler",
+            "expo-haptics",
+            "@expo/vector-icons"
+          ]
+        }
+      ],
+      "layout": "Tab switcher for saved/visited, grid of art cards, stats header with counts"
+    },
+    {
+      "name": "ArtDetail",
+      "file": "src/screens/ArtDetail.js",
+      "purpose": "Full details of art installation with sharing and navigation",
+      "features": [
+        {
+          "name": "image-viewer",
+          "description": "Full-screen image with pinch-to-zoom gesture support",
+          "libraries": [
+            "react-native-gesture-handler",
+            "@expo/vector-icons"
+          ]
+        },
+        {
+          "name": "info-display",
+          "description": "Show title, artist, description, location, and date details",
+          "libraries": [
+            "date-fns",
+            "@expo/vector-icons"
+          ]
+        },
+        {
+          "name": "social-share",
+          "description": "Share art details and image via social media platforms",
+          "libraries": [
+            "expo-sharing",
+            "expo-clipboard",
+            "@expo/vector-icons"
+          ]
+        },
+        {
+          "name": "save-toggle",
+          "description": "Heart icon to save/unsave art with haptic feedback",
+          "libraries": [
+            "expo-haptics",
+            "@react-native-async-storage/async-storage",
+            "@expo/vector-icons"
+          ]
+        },
+        {
+          "name": "map-preview",
+          "description": "Small map showing art location with tap to open navigation",
+          "libraries": [
+            "react-native-maps",
+            "expo-location",
+            "@expo/vector-icons"
+          ]
+        }
+      ],
+      "layout": "Hero image at top, scrollable content with details, action buttons for save and share"
+    },
+    {
+      "name": "Profile",
+      "file": "src/screens/Profile.js",
+      "purpose": "User profile with statistics and settings management",
+      "features": [
+        {
+          "name": "profile-header",
+          "description": "Display avatar, username, bio, and join date with edit button",
+          "libraries": [
+            "@expo/vector-icons",
+            "expo-image-picker"
+          ]
+        },
+        {
+          "name": "activity-stats",
+          "description": "Visual stats for art added, visited, and saved counts",
+          "libraries": [
+            "react-native-svg",
+            "@expo/vector-icons",
+            "date-fns"
+          ]
+        },
+        {
+          "name": "recent-activity",
+          "description": "List of recently added or visited art installations",
+          "libraries": [
+            "date-fns",
+            "@expo/vector-icons",
+            "react-native-reanimated"
+          ]
+        },
+        {
+          "name": "settings-menu",
+          "description": "Access app settings, preferences, and data management options",
+          "libraries": [
+            "@expo/vector-icons",
+            "expo-haptics"
+          ]
+        },
+        {
+          "name": "export-data",
+          "description": "Export user data and art collection to file system",
+          "libraries": [
+            "expo-file-system",
+            "expo-sharing",
+            "@expo/vector-icons"
+          ]
+        }
+      ],
+      "layout": "Profile header with avatar, stats cards in grid, settings list below"
+    }
+  ],
+  "context": {
+    "file": "src/context/AppContext.js",
+    "hook": "useArtSpotter",
+    "methods": [
+      "addArtInstallation",
+      "deleteArtInstallation",
+      "updateArtInstallation",
+      "toggleSaveArt",
+      "addVisit",
+      "updateProfile"
+    ],
+    "computed": [
+      "nearbyArt",
+      "savedArt",
+      "visitedArt",
+      "userStats",
+      "filteredArt"
+    ]
+  }
+}

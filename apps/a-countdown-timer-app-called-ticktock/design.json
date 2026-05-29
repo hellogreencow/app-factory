@@ -1,0 +1,247 @@
+
+{
+  "name": "TickTock",
+  "description": "A modern countdown timer app with dark theme and red accents.",
+  "style": {
+    "theme": "dark",
+    "backgroundColor": "#121212",
+    "cardColor": "#212121",
+    "textColor": "#FFFFFF",
+    "accentColor": "#FF0000",
+    "secondaryAccent": "#64FFDA",
+    "borderRadius": 8
+  },
+  "navigation": {
+    "type": "bottom-tabs",
+    "tabs": [
+      {
+        "name": "Timers",
+        "icon": "Ionicons/timer-outline",
+        "screen": "TimersScreen"
+      },
+      {
+        "name": "Create",
+        "icon": "Ionicons/add-circle-outline",
+        "screen": "CreateTimerScreen"
+      },
+      {
+        "name": "Settings",
+        "icon": "Ionicons/settings-outline",
+        "screen": "SettingsScreen"
+      }
+    ]
+  },
+  "dataModel": {
+    "entities": [
+      {
+        "name": "Timer",
+        "storageKey": "@ticktock_timers",
+        "fields": [
+          {
+            "name": "id",
+            "type": "string"
+          },
+          {
+            "name": "name",
+            "type": "string"
+          },
+          {
+            "name": "endDate",
+            "type": "number"
+          },
+          {
+            "name": "description",
+            "type": "string"
+          },
+          {
+            "name": "repeat",
+            "type": "boolean"
+          }
+        ]
+      }
+    ]
+  },
+  "screens": [
+    {
+      "name": "TimersScreen",
+      "file": "src/screens/TimersScreen.js",
+      "purpose": "Display and manage a list of active countdown timers.",
+      "features": [
+        {
+          "name": "timer-list",
+          "description": "Displays a list of timers with remaining time.",
+          "libraries": [
+            "react-native",
+            "@expo/vector-icons",
+            "date-fns"
+          ]
+        },
+        {
+          "name": "timer-deletion",
+          "description": "Allows deleting timers via swipe gesture.",
+          "libraries": [
+            "react-native-gesture-handler",
+            "react-native-reanimated",
+            "@expo/vector-icons",
+            "@react-native-async-storage/async-storage"
+          ]
+        },
+        {
+          "name": "haptic-feedback",
+          "description": "Provides haptic feedback on timer completion.",
+          "libraries": [
+            "expo-haptics"
+          ]
+        }
+      ],
+      "layout": "List of timers in cards. Red accent for nearing deadlines."
+    },
+    {
+      "name": "CreateTimerScreen",
+      "file": "src/screens/CreateTimerScreen.js",
+      "purpose": "Create new countdown timers with custom settings.",
+      "features": [
+        {
+          "name": "timer-creation",
+          "description": "Allows users to create new timers with a name, end date, and description.",
+          "libraries": [
+            "react-native",
+            "@expo/vector-icons",
+            "@react-native-async-storage/async-storage",
+            "date-fns"
+          ]
+        },
+        {
+          "name": "date-picker",
+          "description": "Provides a date picker component for selecting the end date.",
+          "libraries": [
+            "react-native",
+            "date-fns"
+          ]
+        },
+        {
+          "name": "input-validation",
+          "description": "Validates user input to ensure correct timer creation.",
+          "libraries": [
+            "react-native"
+          ]
+        }
+      ],
+      "layout": "Form with text inputs, date picker, and save button."
+    },
+    {
+      "name": "SettingsScreen",
+      "file": "src/screens/SettingsScreen.js",
+      "purpose": "Configure app settings like theme and notifications.",
+      "features": [
+        {
+          "name": "theme-selection",
+          "description": "Allows users to switch between light and dark themes.",
+          "libraries": [
+            "react-native",
+            "@expo/vector-icons",
+            "@react-native-async-storage/async-storage"
+          ]
+        },
+        {
+          "name": "notification-settings",
+          "description": "Controls notification preferences for timer completion.",
+          "libraries": [
+            "react-native",
+            "@expo/vector-icons"
+          ]
+        },
+        {
+          "name": "about-section",
+          "description": "Displays app information and credits.",
+          "libraries": [
+            "react-native"
+          ]
+        }
+      ],
+      "layout": "List of settings options with toggles and descriptions."
+    },
+    {
+      "name": "TimerDetailScreen",
+      "file": "src/screens/TimerDetailScreen.js",
+      "purpose": "Display a detailed view of a single timer.",
+      "features": [
+        {
+          "name": "timer-details",
+          "description": "Shows timer name, description, and remaining time.",
+          "libraries": [
+            "react-native",
+            "@expo/vector-icons",
+            "date-fns"
+          ]
+        },
+        {
+          "name": "timer-edit",
+          "description": "Allows editing timer details.",
+          "libraries": [
+            "react-native",
+            "@expo/vector-icons",
+            "@react-native-async-storage/async-storage",
+            "date-fns"
+          ]
+        },
+        {
+          "name": "timer-reset",
+          "description": "Resets the timer to the original end date.",
+          "libraries": [
+            "react-native",
+            "@expo/vector-icons",
+            "@react-native-async-storage/async-storage"
+          ]
+        }
+      ],
+      "layout": "Details view with editable fields and action buttons."
+    },
+    {
+      "name": "EditTimerScreen",
+      "file": "src/screens/EditTimerScreen.js",
+      "purpose": "Edit existing countdown timers.",
+      "features": [
+        {
+          "name": "timer-editing",
+          "description": "Allows users to modify timer name, end date, and description.",
+          "libraries": [
+            "react-native",
+            "@expo/vector-icons",
+            "@react-native-async-storage/async-storage",
+            "date-fns"
+          ]
+        },
+        {
+          "name": "date-picker",
+          "description": "Provides a date picker for easy end date selection.",
+          "libraries": [
+            "react-native",
+            "date-fns"
+          ]
+        },
+        {
+          "name": "input-validation",
+          "description": "Validates user input before saving changes.",
+          "libraries": [
+            "react-native"
+          ]
+        }
+      ],
+      "layout": "Form similar to CreateTimerScreen, pre-filled with timer data."
+    }
+  ],
+  "context": {
+    "file": "src/context/AppContext.js",
+    "hook": "useTimerContext",
+    "methods": [
+      "addTimer",
+      "deleteTimer",
+      "updateTimer"
+    ],
+    "computed": [
+      "activeTimers",
+      "completedTimers"
+    ]
+  }
+}

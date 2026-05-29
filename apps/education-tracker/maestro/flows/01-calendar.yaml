@@ -1,0 +1,11 @@
+appId: com.iosappfactory.educationtracker
+---
+- launchApp
+- extendedWaitUntil:
+    visible:
+      text: "Calendar"
+    timeout: 15000
+- assertVisible:
+    id: "streak"
+- assertVisible:
+    id: "add-entry"

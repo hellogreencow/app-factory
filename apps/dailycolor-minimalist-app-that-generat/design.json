@@ -1,0 +1,187 @@
+{
+  "name": "DailyColor",
+  "description": "A minimalist app generating a unique color each day.",
+  "style": {
+    "theme": "dark",
+    "backgroundColor": "#121212",
+    "cardColor": "#212121",
+    "textColor": "#FFFFFF",
+    "accentColor": "#BB86FC",
+    "secondaryAccent": "#3700B3",
+    "borderRadius": 8
+  },
+  "navigation": {
+    "type": "bottom-tabs",
+    "tabs": [
+      {
+        "name": "Daily",
+        "icon": "Ionicons/ios-color-palette",
+        "screen": "DailyScreen"
+      },
+      {
+        "name": "Wallpaper",
+        "icon": "Ionicons/ios-image",
+        "screen": "WallpaperScreen"
+      },
+      {
+        "name": "About",
+        "icon": "Ionicons/ios-information-circle",
+        "screen": "AboutScreen"
+      }
+    ]
+  },
+  "dataModel": {
+    "entities": [
+      {
+        "name": "ColorHistory",
+        "storageKey": "@dailycolor_history",
+        "fields": [
+          {
+            "name": "date",
+            "type": "string"
+          },
+          {
+            "name": "hex",
+            "type": "string"
+          },
+          {
+            "name": "name",
+            "type": "string"
+          }
+        ]
+      }
+    ]
+  },
+  "screens": [
+    {
+      "name": "DailyScreen",
+      "file": "src/screens/DailyScreen.js",
+      "purpose": "Displays today's generated color.",
+      "features": [
+        {
+          "name": "color-display",
+          "description": "Shows hex, RGB, and color name for today's color.",
+          "libraries": [
+            "@expo/vector-icons",
+            "expo-clipboard"
+          ]
+        },
+        {
+          "name": "color-generation",
+          "description": "Generates a unique color based on the current date.",
+          "libraries": [
+            "date-fns"
+          ]
+        },
+        {
+          "name": "copy-hex",
+          "description": "Allows copying the hex code to the clipboard.",
+          "libraries": [
+            "expo-clipboard",
+            "@expo/vector-icons"
+          ]
+        }
+      ],
+      "layout": "Color block at top, details below, copy button."
+    },
+    {
+      "name": "WallpaperScreen",
+      "file": "src/screens/WallpaperScreen.js",
+      "purpose": "Displays the color in fullscreen for wallpaper use.",
+      "features": [
+        {
+          "name": "fullscreen-color",
+          "description": "Displays the current color in fullscreen.",
+          "libraries": []
+        },
+        {
+          "name": "info-overlay",
+          "description": "Optional overlay showing color details (hex, name).",
+          "libraries": [
+            "@expo/vector-icons"
+          ]
+        },
+        {
+          "name": "gesture-controls",
+          "description": "Tap to toggle info overlay visibility.",
+          "libraries": [
+            "react-native-gesture-handler"
+          ]
+        }
+      ],
+      "layout": "Fullscreen color display, optional overlay."
+    },
+    {
+      "name": "AboutScreen",
+      "file": "src/screens/AboutScreen.js",
+      "purpose": "Displays app information and credits.",
+      "features": [
+        {
+          "name": "app-info",
+          "description": "Displays app name, version, and description.",
+          "libraries": [
+            "expo-constants"
+          ]
+        },
+        {
+          "name": "credits",
+          "description": "Lists contributors and libraries used.",
+          "libraries": [
+            "@expo/vector-icons"
+          ]
+        },
+        {
+          "name": "privacy-policy",
+          "description": "Link to privacy policy.",
+          "libraries": [
+            "@expo/vector-icons"
+          ]
+        }
+      ],
+      "layout": "Scrollable view with app info and credits."
+    },
+    {
+      "name": "HistoryScreen",
+      "file": "src/screens/HistoryScreen.js",
+      "purpose": "Displays a history of generated colors.",
+      "features": [
+        {
+          "name": "list-colors",
+          "description": "Lists previously generated colors with date and hex.",
+          "libraries": [
+            "@expo/vector-icons",
+            "@react-native-async-storage/async-storage"
+          ]
+        },
+        {
+          "name": "delete-color",
+          "description": "Allows deleting colors from history.",
+          "libraries": [
+            "@react-native-async-storage/async-storage",
+            "@expo/vector-icons"
+          ]
+        },
+        {
+          "name": "navigation",
+          "description": "Navigates to daily screen.",
+          "libraries": [
+            "@expo/vector-icons"
+          ]
+        }
+      ],
+      "layout": "List with color swatches and delete buttons."
+    }
+  ],
+  "context": {
+    "file": "src/context/AppContext.js",
+    "hook": "useColorContext",
+    "methods": [
+      "generateColor",
+      "addToHistory",
+      "deleteFromHistory"
+    ],
+    "computed": [
+      "todaysColor"
+    ]
+  }
+}

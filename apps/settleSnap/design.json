@@ -1,0 +1,491 @@
+{
+  "name": "SettleSnap",
+  "description": "Split bills, track shared expenses, and auto-settle debts with smart scanning and payment reminders.",
+  "style": {
+    "theme": "light",
+    "backgroundColor": "#FAFAFA",
+    "cardColor": "#FFFFFF",
+    "textColor": "#1A1A1A",
+    "accentColor": "#2E7D32",
+    "secondaryAccent": "#757575",
+    "borderRadius": 12
+  },
+  "navigation": {
+    "type": "bottom-tabs",
+    "tabs": [
+      {
+        "name": "Groups",
+        "icon": "Ionicons/people-outline",
+        "screen": "GroupsList"
+      },
+      {
+        "name": "Scan",
+        "icon": "Ionicons/scan-outline",
+        "screen": "ScanReceipt"
+      },
+      {
+        "name": "Balances",
+        "icon": "Ionicons/wallet-outline",
+        "screen": "Balances"
+      },
+      {
+        "name": "Activity",
+        "icon": "Ionicons/time-outline",
+        "screen": "Activity"
+      }
+    ]
+  },
+  "dataModel": {
+    "entities": [
+      {
+        "name": "Group",
+        "storageKey": "@settleSnap_groups",
+        "fields": [
+          {
+            "name": "id",
+            "type": "string"
+          },
+          {
+            "name": "name",
+            "type": "string"
+          },
+          {
+            "name": "memberIds",
+            "type": "array"
+          },
+          {
+            "name": "createdAt",
+            "type": "number"
+          },
+          {
+            "name": "currency",
+            "type": "string"
+          }
+        ]
+      },
+      {
+        "name": "Member",
+        "storageKey": "@settleSnap_members",
+        "fields": [
+          {
+            "name": "id",
+            "type": "string"
+          },
+          {
+            "name": "name",
+            "type": "string"
+          },
+          {
+            "name": "email",
+            "type": "string"
+          },
+          {
+            "name": "avatar",
+            "type": "string"
+          }
+        ]
+      },
+      {
+        "name": "Expense",
+        "storageKey": "@settleSnap_expenses",
+        "fields": [
+          {
+            "name": "id",
+            "type": "string"
+          },
+          {
+            "name": "groupId",
+            "type": "string"
+          },
+          {
+            "name": "description",
+            "type": "string"
+          },
+          {
+            "name": "amount",
+            "type": "number"
+          },
+          {
+            "name": "paidById",
+            "type": "string"
+          },
+          {
+            "name": "splitWith",
+            "type": "array"
+          },
+          {
+            "name": "date",
+            "type": "number"
+          },
+          {
+            "name": "category",
+            "type": "string"
+          },
+          {
+            "name": "imageUri",
+            "type": "string"
+          }
+        ]
+      },
+      {
+        "name": "Settlement",
+        "storageKey": "@settleSnap_settlements",
+        "fields": [
+          {
+            "name": "id",
+            "type": "string"
+          },
+          {
+            "name": "groupId",
+            "type": "string"
+          },
+          {
+            "name": "fromId",
+            "type": "string"
+          },
+          {
+            "name": "toId",
+            "type": "string"
+          },
+          {
+            "name": "amount",
+            "type": "number"
+          },
+          {
+            "name": "settledAt",
+            "type": "number"
+          },
+          {
+            "name": "status",
+            "type": "string"
+          }
+        ]
+      }
+    ]
+  },
+  "screens": [
+    {
+      "name": "GroupsList",
+      "file": "src/screens/GroupsList.js",
+      "purpose": "Display all expense groups with quick balance overview",
+      "features": [
+        {
+          "name": "group-cards",
+          "description": "Scrollable cards showing group name, member count, and net balance",
+          "libraries": [
+            "@expo/vector-icons",
+            "@react-native-async-storage/async-storage"
+          ]
+        },
+        {
+          "name": "create-group",
+          "description": "Floating action button to create new expense groups",
+          "libraries": [
+            "@expo/vector-icons",
+            "expo-haptics"
+          ]
+        },
+        {
+          "name": "quick-stats",
+          "description": "Header shows total owed and total owe amounts",
+          "libraries": [
+            "@expo/vector-icons"
+          ]
+        },
+        {
+          "name": "group-navigation",
+          "description": "Tap card to navigate to group detail screen",
+          "libraries": [
+            "@react-navigation/native"
+          ]
+        }
+      ],
+      "layout": "Header with stats, scrollable group cards, floating add button bottom-right"
+    },
+    {
+      "name": "GroupDetail",
+      "file": "src/screens/GroupDetail.js",
+      "purpose": "View expenses, members, and balances for a specific group",
+      "features": [
+        {
+          "name": "expense-list",
+          "description": "Chronological list of expenses with category icons and amounts",
+          "libraries": [
+            "@expo/vector-icons",
+            "date-fns"
+          ]
+        },
+        {
+          "name": "member-chips",
+          "description": "Horizontal scrollable member avatars with individual balances",
+          "libraries": [
+            "@expo/vector-icons"
+          ]
+        },
+        {
+          "name": "add-expense",
+          "description": "Button to add manual expense or navigate to scan",
+          "libraries": [
+            "@expo/vector-icons",
+            "@react-navigation/native"
+          ]
+        },
+        {
+          "name": "settle-up",
+          "description": "Button showing suggested settlements with payment flow",
+          "libraries": [
+            "@expo/vector-icons",
+            "expo-haptics"
+          ]
+        },
+        {
+          "name": "swipe-delete",
+          "description": "Swipe expense items left to reveal delete action",
+          "libraries": [
+            "react-native-gesture-handler",
+            "expo-haptics"
+          ]
+        }
+      ],
+      "layout": "Member chips at top, expense list below, add/settle buttons at bottom"
+    },
+    {
+      "name": "ScanReceipt",
+      "file": "src/screens/ScanReceipt.js",
+      "purpose": "Capture receipt images and extract expense details",
+      "features": [
+        {
+          "name": "camera-view",
+          "description": "Full-screen camera with capture button and flash toggle",
+          "libraries": [
+            "expo-camera",
+            "@expo/vector-icons"
+          ]
+        },
+        {
+          "name": "image-picker",
+          "description": "Option to select existing receipt from gallery",
+          "libraries": [
+            "expo-image-picker",
+            "@expo/vector-icons"
+          ]
+        },
+        {
+          "name": "manual-entry",
+          "description": "Skip scanning and manually enter expense details",
+          "libraries": [
+            "@expo/vector-icons",
+            "@react-navigation/native"
+          ]
+        },
+        {
+          "name": "haptic-feedback",
+          "description": "Vibration on capture and successful scan",
+          "libraries": [
+            "expo-haptics"
+          ]
+        }
+      ],
+      "layout": "Camera viewfinder fills screen, controls overlay bottom, gallery icon top-right"
+    },
+    {
+      "name": "AddExpense",
+      "file": "src/screens/AddExpense.js",
+      "purpose": "Form to enter or edit expense details and split options",
+      "features": [
+        {
+          "name": "expense-form",
+          "description": "Input fields for amount, description, date, and category picker",
+          "libraries": [
+            "@expo/vector-icons",
+            "date-fns"
+          ]
+        },
+        {
+          "name": "split-selector",
+          "description": "Choose equal split or custom amounts per member",
+          "libraries": [
+            "@expo/vector-icons"
+          ]
+        },
+        {
+          "name": "payer-picker",
+          "description": "Select which member paid the bill",
+          "libraries": [
+            "@expo/vector-icons"
+          ]
+        },
+        {
+          "name": "receipt-preview",
+          "description": "Show scanned image thumbnail if available",
+          "libraries": [
+            "@expo/vector-icons"
+          ]
+        },
+        {
+          "name": "save-expense",
+          "description": "Validate and save expense to selected group",
+          "libraries": [
+            "@react-native-async-storage/async-storage",
+            "expo-haptics"
+          ]
+        }
+      ],
+      "layout": "Scrollable form with receipt preview top, input fields middle, save button bottom"
+    },
+    {
+      "name": "Balances",
+      "file": "src/screens/Balances.js",
+      "purpose": "Overview of all debts and credits across groups",
+      "features": [
+        {
+          "name": "balance-summary",
+          "description": "Total amounts you owe and are owed",
+          "libraries": [
+            "@expo/vector-icons"
+          ]
+        },
+        {
+          "name": "debt-list",
+          "description": "Grouped list of who owes you and who you owe",
+          "libraries": [
+            "@expo/vector-icons",
+            "date-fns"
+          ]
+        },
+        {
+          "name": "settle-action",
+          "description": "Quick settle button for each debt item",
+          "libraries": [
+            "@expo/vector-icons",
+            "expo-haptics"
+          ]
+        },
+        {
+          "name": "payment-reminder",
+          "description": "Send reminder notification for outstanding debts",
+          "libraries": [
+            "@expo/vector-icons",
+            "expo-sharing"
+          ]
+        },
+        {
+          "name": "filter-toggle",
+          "description": "Toggle between all balances, owed, and owing",
+          "libraries": [
+            "@expo/vector-icons"
+          ]
+        }
+      ],
+      "layout": "Summary cards at top, filter tabs below, scrollable debt list with settle buttons"
+    },
+    {
+      "name": "Activity",
+      "file": "src/screens/Activity.js",
+      "purpose": "Timeline of all expenses and settlements",
+      "features": [
+        {
+          "name": "activity-feed",
+          "description": "Chronological list of expenses and settlements with timestamps",
+          "libraries": [
+            "@expo/vector-icons",
+            "date-fns"
+          ]
+        },
+        {
+          "name": "date-headers",
+          "description": "Sticky section headers grouping by date",
+          "libraries": [
+            "date-fns"
+          ]
+        },
+        {
+          "name": "activity-icons",
+          "description": "Different icons for expense added, settled, and reminder events",
+          "libraries": [
+            "@expo/vector-icons"
+          ]
+        },
+        {
+          "name": "filter-options",
+          "description": "Filter by group, member, or activity type",
+          "libraries": [
+            "@expo/vector-icons"
+          ]
+        },
+        {
+          "name": "pull-refresh",
+          "description": "Pull down to refresh activity timeline",
+          "libraries": [
+            "@expo/vector-icons"
+          ]
+        }
+      ],
+      "layout": "Filter bar at top, scrollable timeline with date sections, icons left of items"
+    },
+    {
+      "name": "SettlePayment",
+      "file": "src/screens/SettlePayment.js",
+      "purpose": "Record payment and mark debt as settled",
+      "features": [
+        {
+          "name": "settlement-summary",
+          "description": "Display who pays whom and amount to settle",
+          "libraries": [
+            "@expo/vector-icons"
+          ]
+        },
+        {
+          "name": "payment-method",
+          "description": "Select payment method with icons for cash, app, bank",
+          "libraries": [
+            "@expo/vector-icons"
+          ]
+        },
+        {
+          "name": "confirmation",
+          "description": "Mark as paid and record settlement timestamp",
+          "libraries": [
+            "@react-native-async-storage/async-storage",
+            "expo-haptics"
+          ]
+        },
+        {
+          "name": "share-receipt",
+          "description": "Share settlement confirmation via messaging or email",
+          "libraries": [
+            "expo-sharing",
+            "@expo/vector-icons"
+          ]
+        },
+        {
+          "name": "partial-payment",
+          "description": "Option to settle partial amount instead of full debt",
+          "libraries": [
+            "@expo/vector-icons"
+          ]
+        }
+      ],
+      "layout": "Settlement details card top, payment method selector middle, confirm button bottom"
+    }
+  ],
+  "context": {
+    "file": "src/context/AppContext.js",
+    "hook": "useSettleSnap",
+    "methods": [
+      "addGroup",
+      "addMember",
+      "addExpense",
+      "deleteExpense",
+      "addSettlement",
+      "updateExpense",
+      "deleteGroup"
+    ],
+    "computed": [
+      "groupBalances",
+      "userBalances",
+      "activityFeed",
+      "suggestedSettlements"
+    ]
+  }
+}

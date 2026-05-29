@@ -1,0 +1,11 @@
+{
+  "name": "Rewind",
+  "description": "Capture the essence of your day with one simple tap.",
+  "features": [
+    "calendar",
+    "day-entry",
+    "stats",
+    "settings"
+  ],
+  "architecture": "tracker"
+}

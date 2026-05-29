@@ -1,0 +1,225 @@
+{
+  "name": "NearFear",
+  "description": "Detect and manage nearby phobias with sensor data and community input.",
+  "style": {
+    "theme": "dark",
+    "backgroundColor": "#121212",
+    "cardColor": "#1E1E1E",
+    "textColor": "#FFFFFF",
+    "accentColor": "#BB86FC",
+    "secondaryAccent": "#03DAC5",
+    "borderRadius": 8
+  },
+  "navigation": {
+    "type": "bottom-tabs",
+    "tabs": [
+      {
+        "name": "Map",
+        "icon": "Ionicons/map-outline",
+        "screen": "MapScreen"
+      },
+      {
+        "name": "Fear List",
+        "icon": "Ionicons/list-outline",
+        "screen": "FearListScreen"
+      },
+      {
+        "name": "Profile",
+        "icon": "Ionicons/person-outline",
+        "screen": "ProfileScreen"
+      }
+    ]
+  },
+  "dataModel": {
+    "entities": [
+      {
+        "name": "Fear",
+        "storageKey": "@nearfear_fears",
+        "fields": [
+          {
+            "name": "id",
+            "type": "string"
+          },
+          {
+            "name": "name",
+            "type": "string"
+          },
+          {
+            "name": "description",
+            "type": "string"
+          },
+          {
+            "name": "location",
+            "type": "object"
+          },
+          {
+            "name": "sensorData",
+            "type": "object"
+          },
+          {
+            "name": "severity",
+            "type": "number"
+          }
+        ]
+      }
+    ]
+  },
+  "screens": [
+    {
+      "name": "MapScreen",
+      "file": "src/screens/MapScreen.js",
+      "purpose": "Display nearby phobias on a map.",
+      "features": [
+        {
+          "name": "map-display",
+          "description": "Shows phobia locations using MapView with markers.",
+          "libraries": [
+            "react-native-maps",
+            "@expo/vector-icons",
+            "expo-location"
+          ]
+        },
+        {
+          "name": "location-tracking",
+          "description": "Tracks user location to display nearby fears.",
+          "libraries": [
+            "expo-location"
+          ]
+        }
+      ],
+      "layout": "Full-screen map with markers and callouts."
+    },
+    {
+      "name": "FearListScreen",
+      "file": "src/screens/FearListScreen.js",
+      "purpose": "List and manage user-reported phobias.",
+      "features": [
+        {
+          "name": "fear-list",
+          "description": "Displays a scrollable list of phobias.",
+          "libraries": [
+            "@expo/vector-icons",
+            "react-native-gesture-handler"
+          ]
+        },
+        {
+          "name": "add-fear",
+          "description": "Allows users to add new phobias to the list.",
+          "libraries": [
+            "@expo/vector-icons"
+          ]
+        },
+        {
+          "name": "delete-fear",
+          "description": "Allows users to delete phobias from the list.",
+          "libraries": [
+            "@expo/vector-icons"
+          ]
+        }
+      ],
+      "layout": "List of cards with fear details and actions."
+    },
+    {
+      "name": "ProfileScreen",
+      "file": "src/screens/ProfileScreen.js",
+      "purpose": "User profile and settings management.",
+      "features": [
+        {
+          "name": "profile-info",
+          "description": "Displays user profile information.",
+          "libraries": [
+            "@expo/vector-icons"
+          ]
+        },
+        {
+          "name": "settings",
+          "description": "Allows users to adjust app settings.",
+          "libraries": [
+            "@expo/vector-icons",
+            "@react-native-async-storage/async-storage"
+          ]
+        },
+        {
+          "name": "logout",
+          "description": "Allows users to log out of the application.",
+          "libraries": [
+            "@expo/vector-icons"
+          ]
+        }
+      ],
+      "layout": "Profile details and settings options."
+    },
+    {
+      "name": "FearDetailScreen",
+      "file": "src/screens/FearDetailScreen.js",
+      "purpose": "Show detailed information about a specific phobia.",
+      "features": [
+        {
+          "name": "detail-view",
+          "description": "Displays detailed information about a phobia.",
+          "libraries": [
+            "@expo/vector-icons"
+          ]
+        },
+        {
+          "name": "sensor-data",
+          "description": "Shows sensor data related to the phobia.",
+          "libraries": [
+            "@expo/vector-icons"
+          ]
+        },
+        {
+          "name": "edit-fear",
+          "description": "Allows users to edit the phobia details.",
+          "libraries": [
+            "@expo/vector-icons"
+          ]
+        }
+      ],
+      "layout": "Detailed view with fear information and sensor data."
+    },
+    {
+      "name": "AddFearScreen",
+      "file": "src/screens/AddFearScreen.js",
+      "purpose": "Create a new phobia entry.",
+      "features": [
+        {
+          "name": "form-input",
+          "description": "Allows users to input phobia details.",
+          "libraries": [
+            "@expo/vector-icons"
+          ]
+        },
+        {
+          "name": "location-picker",
+          "description": "Allows users to select a location for the phobia.",
+          "libraries": [
+            "expo-location",
+            "react-native-maps"
+          ]
+        },
+        {
+          "name": "sensor-capture",
+          "description": "Captures sensor data related to the phobia.",
+          "libraries": [
+            "expo-location"
+          ]
+        }
+      ],
+      "layout": "Form for inputting phobia details and location."
+    }
+  ],
+  "context": {
+    "file": "src/context/AppContext.js",
+    "hook": "useFears",
+    "methods": [
+      "addFear",
+      "deleteFear",
+      "updateFear"
+    ],
+    "computed": [
+      "nearbyFears",
+      "fearStats"
+    ]
+  }
+}

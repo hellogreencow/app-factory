@@ -1,0 +1,263 @@
+{
+  "name": "NearFear",
+  "description": "Dark social app with video dares on a live map. Fear Factor meets social media.",
+  "style": {
+    "theme": "dark",
+    "backgroundColor": "#121212",
+    "cardColor": "#1E1E1E",
+    "textColor": "#FFFFFF",
+    "accentColor": "#64FFDA",
+    "secondaryAccent": "#FF4081",
+    "borderRadius": 8
+  },
+  "navigation": {
+    "type": "bottom-tabs",
+    "tabs": [
+      {
+        "name": "Map",
+        "icon": "Ionicons/map-outline",
+        "screen": "MapScreen"
+      },
+      {
+        "name": "Dares",
+        "icon": "Ionicons/flame-outline",
+        "screen": "DaresScreen"
+      },
+      {
+        "name": "Create",
+        "icon": "Ionicons/add-circle-outline",
+        "screen": "CreateDareScreen"
+      },
+      {
+        "name": "Activity",
+        "icon": "Ionicons/notifications-outline",
+        "screen": "ActivityScreen"
+      },
+      {
+        "name": "Profile",
+        "icon": "Ionicons/person-outline",
+        "screen": "ProfileScreen"
+      }
+    ]
+  },
+  "dataModel": {
+    "entities": [
+      {
+        "name": "Dare",
+        "storageKey": "@nearfear_dares",
+        "fields": [
+          {
+            "name": "id",
+            "type": "string"
+          },
+          {
+            "name": "title",
+            "type": "string"
+          },
+          {
+            "name": "description",
+            "type": "string"
+          },
+          {
+            "name": "location",
+            "type": "object"
+          },
+          {
+            "name": "videoUrl",
+            "type": "string"
+          },
+          {
+            "name": "creatorId",
+            "type": "string"
+          },
+          {
+            "name": "createdAt",
+            "type": "string"
+          },
+          {
+            "name": "likes",
+            "type": "number"
+          }
+        ]
+      },
+      {
+        "name": "User",
+        "storageKey": "@nearfear_user",
+        "fields": [
+          {
+            "name": "id",
+            "type": "string"
+          },
+          {
+            "name": "username",
+            "type": "string"
+          },
+          {
+            "name": "profilePicture",
+            "type": "string"
+          },
+          {
+            "name": "bio",
+            "type": "string"
+          }
+        ]
+      }
+    ]
+  },
+  "screens": [
+    {
+      "name": "MapScreen",
+      "file": "src/screens/MapScreen.js",
+      "purpose": "Display nearby dares on a map.",
+      "features": [
+        {
+          "name": "map-display",
+          "description": "Show dares as markers on a map.",
+          "libraries": [
+            "react-native-maps",
+            "expo-location",
+            "@expo/vector-icons"
+          ]
+        },
+        {
+          "name": "location-tracking",
+          "description": "Track user's location for nearby dares.",
+          "libraries": [
+            "expo-location"
+          ]
+        }
+      ],
+      "layout": "Full-screen map with dare markers and user location."
+    },
+    {
+      "name": "DaresScreen",
+      "file": "src/screens/DaresScreen.js",
+      "purpose": "List of all available dares.",
+      "features": [
+        {
+          "name": "dare-list",
+          "description": "Display a list of dares with title and location.",
+          "libraries": [
+            "@expo/vector-icons",
+            "date-fns"
+          ]
+        },
+        {
+          "name": "dare-filtering",
+          "description": "Filter dares by category or location.",
+          "libraries": [
+            "@react-native-async-storage/async-storage"
+          ]
+        }
+      ],
+      "layout": "Vertical list of dare cards with filtering options."
+    },
+    {
+      "name": "CreateDareScreen",
+      "file": "src/screens/CreateDareScreen.js",
+      "purpose": "Create and post a new dare.",
+      "features": [
+        {
+          "name": "video-capture",
+          "description": "Record or upload a video for the dare.",
+          "libraries": [
+            "expo-camera",
+            "expo-image-picker",
+            "@expo/vector-icons"
+          ]
+        },
+        {
+          "name": "location-selection",
+          "description": "Select the location for the dare on a map.",
+          "libraries": [
+            "react-native-maps",
+            "expo-location"
+          ]
+        }
+      ],
+      "layout": "Form for dare details with video upload and map selection."
+    },
+    {
+      "name": "ActivityScreen",
+      "file": "src/screens/ActivityScreen.js",
+      "purpose": "Show user's activity and notifications.",
+      "features": [
+        {
+          "name": "notification-list",
+          "description": "Display a list of notifications.",
+          "libraries": [
+            "@expo/vector-icons",
+            "date-fns"
+          ]
+        },
+        {
+          "name": "notification-handling",
+          "description": "Handle different types of notifications.",
+          "libraries": [
+            "@react-native-async-storage/async-storage"
+          ]
+        }
+      ],
+      "layout": "Vertical list of activity notifications."
+    },
+    {
+      "name": "ProfileScreen",
+      "file": "src/screens/ProfileScreen.js",
+      "purpose": "Display user profile and settings.",
+      "features": [
+        {
+          "name": "profile-info",
+          "description": "Show user profile information.",
+          "libraries": [
+            "@expo/vector-icons"
+          ]
+        },
+        {
+          "name": "settings-access",
+          "description": "Access to app settings.",
+          "libraries": [
+            "@react-native-async-storage/async-storage"
+          ]
+        }
+      ],
+      "layout": "Profile information and settings options."
+    },
+    {
+      "name": "DareDetailScreen",
+      "file": "src/screens/DareDetailScreen.js",
+      "purpose": "Display details of a specific dare.",
+      "features": [
+        {
+          "name": "dare-video-playback",
+          "description": "Play video associated with dare.",
+          "libraries": [
+            "@expo/vector-icons"
+          ]
+        },
+        {
+          "name": "like-dare",
+          "description": "Allow user to like or dislike a dare.",
+          "libraries": [
+            "expo-haptics"
+          ]
+        }
+      ],
+      "layout": "Video player, dare description, and like button."
+    }
+  ],
+  "context": {
+    "file": "src/context/AppContext.js",
+    "hook": "useAppData",
+    "methods": [
+      "addDare",
+      "deleteDare",
+      "updateDare",
+      "setUser",
+      "getUser"
+    ],
+    "computed": [
+      "nearbyDares",
+      "userDares"
+    ]
+  }
+}

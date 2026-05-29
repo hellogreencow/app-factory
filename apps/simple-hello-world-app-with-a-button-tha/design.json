@@ -1,0 +1,327 @@
+{
+  "name": "Hello Toggle",
+  "description": "Simple Hello World app with a button that changes the text label",
+  "style": {
+    "theme": "dark",
+    "backgroundColor": "#0a0a0a",
+    "cardColor": "#1a1a1a",
+    "textColor": "#e0e0e0",
+    "accentColor": "#00d4ff",
+    "secondaryAccent": "#9d4edd",
+    "borderRadius": 16
+  },
+  "navigation": {
+    "type": "bottom-tabs",
+    "tabs": [
+      {
+        "name": "Home",
+        "icon": "Ionicons/home",
+        "screen": "Home"
+      },
+      {
+        "name": "History",
+        "icon": "Ionicons/time",
+        "screen": "History"
+      },
+      {
+        "name": "Themes",
+        "icon": "Ionicons/color-palette",
+        "screen": "Themes"
+      },
+      {
+        "name": "Stats",
+        "icon": "Ionicons/stats-chart",
+        "screen": "Stats"
+      },
+      {
+        "name": "Settings",
+        "icon": "Ionicons/settings",
+        "screen": "Settings"
+      }
+    ]
+  },
+  "dataModel": {
+    "entities": [
+      {
+        "name": "ButtonPress",
+        "storageKey": "@hello_presses",
+        "fields": [
+          {
+            "name": "id",
+            "type": "string"
+          },
+          {
+            "name": "timestamp",
+            "type": "number"
+          },
+          {
+            "name": "message",
+            "type": "string"
+          },
+          {
+            "name": "themeId",
+            "type": "string"
+          }
+        ]
+      },
+      {
+        "name": "Theme",
+        "storageKey": "@hello_themes",
+        "fields": [
+          {
+            "name": "id",
+            "type": "string"
+          },
+          {
+            "name": "name",
+            "type": "string"
+          },
+          {
+            "name": "gradient",
+            "type": "array"
+          },
+          {
+            "name": "messages",
+            "type": "array"
+          }
+        ]
+      },
+      {
+        "name": "Preferences",
+        "storageKey": "@hello_preferences",
+        "fields": [
+          {
+            "name": "selectedThemeId",
+            "type": "string"
+          },
+          {
+            "name": "hapticsEnabled",
+            "type": "boolean"
+          },
+          {
+            "name": "animationSpeed",
+            "type": "number"
+          },
+          {
+            "name": "soundEnabled",
+            "type": "boolean"
+          }
+        ]
+      }
+    ]
+  },
+  "screens": [
+    {
+      "name": "Home",
+      "file": "src/screens/Home.js",
+      "purpose": "Main screen with animated text and button to change messages",
+      "features": [
+        {
+          "name": "animated-text",
+          "description": "Large animated text label that changes on button press with scale effects",
+          "libraries": [
+            "react-native-reanimated",
+            "@expo/vector-icons"
+          ]
+        },
+        {
+          "name": "gradient-button",
+          "description": "Pressable button with gradient background that triggers text change",
+          "libraries": [
+            "expo-linear-gradient",
+            "expo-haptics"
+          ]
+        },
+        {
+          "name": "message-cycle",
+          "description": "Cycles through themed messages with smooth fade transitions",
+          "libraries": [
+            "react-native-reanimated"
+          ]
+        },
+        {
+          "name": "press-counter",
+          "description": "Displays total button presses with animated counter",
+          "libraries": [
+            "@expo/vector-icons"
+          ]
+        }
+      ],
+      "layout": "Centered layout with gradient background, large animated text, gradient button below, and press counter at bottom"
+    },
+    {
+      "name": "History",
+      "file": "src/screens/History.js",
+      "purpose": "Shows chronological list of all button presses with timestamps",
+      "features": [
+        {
+          "name": "press-list",
+          "description": "Scrollable list of button presses with message and timestamp",
+          "libraries": [
+            "@expo/vector-icons",
+            "date-fns"
+          ]
+        },
+        {
+          "name": "relative-time",
+          "description": "Shows relative time for each press using date-fns",
+          "libraries": [
+            "date-fns"
+          ]
+        },
+        {
+          "name": "swipe-delete",
+          "description": "Swipe gesture to delete individual history entries",
+          "libraries": [
+            "react-native-gesture-handler",
+            "expo-haptics"
+          ]
+        },
+        {
+          "name": "share-history",
+          "description": "Share button to export history as text",
+          "libraries": [
+            "expo-sharing",
+            "@expo/vector-icons"
+          ]
+        }
+      ],
+      "layout": "Full-screen FlatList with card items showing message, theme color indicator, timestamp, and swipe actions"
+    },
+    {
+      "name": "Themes",
+      "file": "src/screens/Themes.js",
+      "purpose": "Grid of theme cards to customize message sets and gradients",
+      "features": [
+        {
+          "name": "theme-grid",
+          "description": "Grid layout displaying available themes with gradient previews",
+          "libraries": [
+            "expo-linear-gradient",
+            "@expo/vector-icons"
+          ]
+        },
+        {
+          "name": "theme-selection",
+          "description": "Tap to select active theme with haptic feedback",
+          "libraries": [
+            "expo-haptics",
+            "react-native-reanimated"
+          ]
+        },
+        {
+          "name": "preview-messages",
+          "description": "Shows sample messages when long-pressing theme card",
+          "libraries": [
+            "react-native-gesture-handler"
+          ]
+        },
+        {
+          "name": "active-indicator",
+          "description": "Animated checkmark on currently selected theme",
+          "libraries": [
+            "react-native-reanimated",
+            "@expo/vector-icons"
+          ]
+        }
+      ],
+      "layout": "Two-column grid of theme cards with gradient backgrounds, theme names, and selection indicators"
+    },
+    {
+      "name": "Stats",
+      "file": "src/screens/Stats.js",
+      "purpose": "Visual statistics and charts about button press patterns",
+      "features": [
+        {
+          "name": "total-presses",
+          "description": "Large animated counter showing total button presses",
+          "libraries": [
+            "react-native-reanimated",
+            "@expo/vector-icons"
+          ]
+        },
+        {
+          "name": "press-chart",
+          "description": "Bar chart showing presses per theme using SVG",
+          "libraries": [
+            "react-native-svg"
+          ]
+        },
+        {
+          "name": "time-breakdown",
+          "description": "Pie chart of presses by time of day",
+          "libraries": [
+            "react-native-svg",
+            "@expo/vector-icons"
+          ]
+        },
+        {
+          "name": "streaks",
+          "description": "Shows longest streak and current streak with icons",
+          "libraries": [
+            "@expo/vector-icons",
+            "date-fns"
+          ]
+        }
+      ],
+      "layout": "Scrollable view with stat cards at top, followed by SVG charts and streak information"
+    },
+    {
+      "name": "Settings",
+      "file": "src/screens/Settings.js",
+      "purpose": "App preferences including haptics, animations, and data management",
+      "features": [
+        {
+          "name": "haptics-toggle",
+          "description": "Switch to enable or disable haptic feedback",
+          "libraries": [
+            "expo-haptics",
+            "@expo/vector-icons"
+          ]
+        },
+        {
+          "name": "animation-slider",
+          "description": "Slider to adjust animation speed from slow to fast",
+          "libraries": [
+            "react-native-gesture-handler",
+            "@expo/vector-icons"
+          ]
+        },
+        {
+          "name": "clear-data",
+          "description": "Button to clear all history with confirmation alert",
+          "libraries": [
+            "@expo/vector-icons",
+            "expo-haptics"
+          ]
+        },
+        {
+          "name": "app-info",
+          "description": "Displays app version and credits with icons",
+          "libraries": [
+            "expo-constants",
+            "@expo/vector-icons"
+          ]
+        }
+      ],
+      "layout": "Grouped list layout with setting sections, toggles, sliders, and action buttons in dark cards"
+    }
+  ],
+  "context": {
+    "file": "src/context/AppContext.js",
+    "hook": "useAppData",
+    "methods": [
+      "addPress",
+      "deletePress",
+      "clearHistory",
+      "setTheme",
+      "updatePreferences"
+    ],
+    "computed": [
+      "totalPresses",
+      "pressesPerTheme",
+      "currentStreak",
+      "longestStreak"
+    ]
+  }
+}

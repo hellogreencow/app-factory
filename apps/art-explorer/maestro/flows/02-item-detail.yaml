@@ -1,0 +1,15 @@
+appId: com.iosappfactory.artexplorer
+---
+- launchApp
+- extendedWaitUntil:
+    visible:
+      text: "Browse"
+    timeout: 15000
+- tapOn:
+    id: "item-1"
+- extendedWaitUntil:
+    visible:
+      text: "Getting Started"
+    timeout: 5000
+- assertVisible:
+    id: "toggle-bookmark"

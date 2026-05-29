@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="e2e" tests="4" failures="0">
+  <testcase name="01-list-view" status="SUCCESS" />
+  <testcase name="02-add-item" status="SUCCESS" />
+  <testcase name="03-detail-view" status="SUCCESS" />
+  <testcase name="04-settings" status="SUCCESS" />
+</testsuite>

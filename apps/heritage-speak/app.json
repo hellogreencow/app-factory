@@ -1,0 +1,16 @@
+{
+  "expo": {
+    "name": "heritage-speak",
+    "slug": "heritage-speak",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "userInterfaceStyle": "light",
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.iosappfactory.heritagespeak"
+    },
+    "plugins": [
+      "expo-asset"
+    ]
+  }
+}

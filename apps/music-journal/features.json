@@ -1,0 +1,11 @@
+{
+  "name": "music-journal",
+  "description": "music journal app with social-graph focus",
+  "features": [
+    "feed-view",
+    "compose",
+    "profile",
+    "settings"
+  ],
+  "architecture": "feed"
+}

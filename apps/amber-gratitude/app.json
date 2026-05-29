@@ -1,0 +1,16 @@
+{
+  "expo": {
+    "name": "Amber",
+    "slug": "amber-gratitude",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "userInterfaceStyle": "light",
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.iosappfactory.ambergratitude"
+    },
+    "plugins": [
+      "expo-asset"
+    ]
+  }
+}

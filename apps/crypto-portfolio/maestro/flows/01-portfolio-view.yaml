@@ -1,0 +1,12 @@
+# Portfolio view: assert main screen, add button
+appId: com.iosappfactory.cryptoportfolio
+---
+- launchApp
+- extendedWaitUntil:
+    visible:
+      text: "Portfolio"
+    timeout: 30000
+- assertVisible:
+    text: "Portfolio"
+- assertVisible:
+    id: "add-asset"

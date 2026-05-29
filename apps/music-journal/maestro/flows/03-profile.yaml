@@ -1,0 +1,15 @@
+appId: com.iosappfactory.musicjournal
+---
+- launchApp
+- extendedWaitUntil:
+    visible:
+      text: "Feed"
+    timeout: 15000
+- tapOn:
+    text: "Profile"
+- extendedWaitUntil:
+    visible:
+      text: "Profile"
+    timeout: 5000
+- assertVisible:
+    id: "post-count"

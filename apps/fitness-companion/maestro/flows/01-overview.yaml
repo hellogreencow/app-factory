@@ -1,0 +1,13 @@
+appId: com.iosappfactory.fitnesscompanion
+---
+- launchApp
+- extendedWaitUntil:
+    visible:
+      text: "Overview"
+    timeout: 15000
+- assertVisible:
+    text: "Overview"
+- assertVisible:
+    id: "metric-total"
+- assertVisible:
+    id: "mini-chart"

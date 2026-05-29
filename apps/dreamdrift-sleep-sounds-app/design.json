@@ -1,0 +1,472 @@
+{
+  "name": "DreamDrift",
+  "description": "Sleep sounds app with rain, ocean, forest sounds, mixing, timer, and volume control",
+  "style": {
+    "theme": "dark",
+    "backgroundColor": "#0a0e27",
+    "cardColor": "#1a1f3a",
+    "textColor": "#e8eaf6",
+    "accentColor": "#7c4dff",
+    "secondaryAccent": "#4a148c",
+    "borderRadius": 16
+  },
+  "navigation": {
+    "type": "bottom-tabs",
+    "tabs": [
+      {
+        "name": "Sounds",
+        "icon": "Ionicons/musical-notes",
+        "screen": "SoundsLibrary"
+      },
+      {
+        "name": "Mix",
+        "icon": "Ionicons/layers",
+        "screen": "SoundMixer"
+      },
+      {
+        "name": "Timer",
+        "icon": "Ionicons/timer",
+        "screen": "SleepTimer"
+      },
+      {
+        "name": "Favorites",
+        "icon": "Ionicons/heart",
+        "screen": "Favorites"
+      },
+      {
+        "name": "Settings",
+        "icon": "Ionicons/settings",
+        "screen": "Settings"
+      }
+    ]
+  },
+  "dataModel": {
+    "entities": [
+      {
+        "name": "Sound",
+        "storageKey": "@dreamdrift_sounds",
+        "fields": [
+          {
+            "name": "id",
+            "type": "string"
+          },
+          {
+            "name": "name",
+            "type": "string"
+          },
+          {
+            "name": "category",
+            "type": "string"
+          },
+          {
+            "name": "icon",
+            "type": "string"
+          },
+          {
+            "name": "color",
+            "type": "string"
+          },
+          {
+            "name": "audioFile",
+            "type": "string"
+          },
+          {
+            "name": "isFavorite",
+            "type": "boolean"
+          }
+        ]
+      },
+      {
+        "name": "Mix",
+        "storageKey": "@dreamdrift_mixes",
+        "fields": [
+          {
+            "name": "id",
+            "type": "string"
+          },
+          {
+            "name": "name",
+            "type": "string"
+          },
+          {
+            "name": "sounds",
+            "type": "array"
+          },
+          {
+            "name": "volumes",
+            "type": "object"
+          },
+          {
+            "name": "createdAt",
+            "type": "number"
+          },
+          {
+            "name": "isFavorite",
+            "type": "boolean"
+          }
+        ]
+      },
+      {
+        "name": "Session",
+        "storageKey": "@dreamdrift_sessions",
+        "fields": [
+          {
+            "name": "id",
+            "type": "string"
+          },
+          {
+            "name": "soundIds",
+            "type": "array"
+          },
+          {
+            "name": "duration",
+            "type": "number"
+          },
+          {
+            "name": "completedAt",
+            "type": "number"
+          }
+        ]
+      },
+      {
+        "name": "Settings",
+        "storageKey": "@dreamdrift_settings",
+        "fields": [
+          {
+            "name": "defaultTimer",
+            "type": "number"
+          },
+          {
+            "name": "fadeOutDuration",
+            "type": "number"
+          },
+          {
+            "name": "masterVolume",
+            "type": "number"
+          },
+          {
+            "name": "theme",
+            "type": "string"
+          }
+        ]
+      }
+    ]
+  },
+  "screens": [
+    {
+      "name": "SoundsLibrary",
+      "file": "src/screens/SoundsLibrary.js",
+      "purpose": "Browse and play individual sleep sounds with categories",
+      "features": [
+        {
+          "name": "gradient-header",
+          "description": "Dark blue to purple gradient header with app title",
+          "libraries": [
+            "expo-linear-gradient",
+            "@expo/vector-icons"
+          ]
+        },
+        {
+          "name": "sound-grid",
+          "description": "Grid of sound cards with icons, names, and play buttons",
+          "libraries": [
+            "@expo/vector-icons",
+            "react-native-gesture-handler"
+          ]
+        },
+        {
+          "name": "category-filter",
+          "description": "Horizontal scrollable category chips for rain, ocean, forest filtering",
+          "libraries": [
+            "@expo/vector-icons"
+          ]
+        },
+        {
+          "name": "sound-playback",
+          "description": "Play/pause individual sounds with haptic feedback on tap",
+          "libraries": [
+            "expo-haptics",
+            "@expo/vector-icons"
+          ]
+        },
+        {
+          "name": "favorite-toggle",
+          "description": "Heart icon to favorite/unfavorite sounds with animation",
+          "libraries": [
+            "@expo/vector-icons",
+            "react-native-reanimated"
+          ]
+        }
+      ],
+      "layout": "Gradient header, category filters, grid of sound cards with icons and controls"
+    },
+    {
+      "name": "SoundMixer",
+      "file": "src/screens/SoundMixer.js",
+      "purpose": "Mix multiple sounds with individual volume controls",
+      "features": [
+        {
+          "name": "active-sounds",
+          "description": "List of currently playing sounds with individual volume sliders",
+          "libraries": [
+            "@expo/vector-icons",
+            "react-native-gesture-handler"
+          ]
+        },
+        {
+          "name": "volume-sliders",
+          "description": "Animated sliders for each sound with visual feedback",
+          "libraries": [
+            "react-native-reanimated",
+            "@expo/vector-icons"
+          ]
+        },
+        {
+          "name": "add-sound",
+          "description": "Bottom sheet to add more sounds to the mix",
+          "libraries": [
+            "@expo/vector-icons",
+            "react-native-gesture-handler"
+          ]
+        },
+        {
+          "name": "save-mix",
+          "description": "Save current mix with custom name for later use",
+          "libraries": [
+            "@react-native-async-storage/async-storage",
+            "@expo/vector-icons"
+          ]
+        },
+        {
+          "name": "master-controls",
+          "description": "Global play/pause and master volume control",
+          "libraries": [
+            "@expo/vector-icons",
+            "expo-haptics"
+          ]
+        }
+      ],
+      "layout": "Master controls at top, list of active sounds with sliders, floating add button"
+    },
+    {
+      "name": "SleepTimer",
+      "file": "src/screens/SleepTimer.js",
+      "purpose": "Set sleep timer with countdown and fade-out options",
+      "features": [
+        {
+          "name": "circular-timer",
+          "description": "Animated circular progress showing remaining time with gradient stroke",
+          "libraries": [
+            "react-native-svg",
+            "react-native-reanimated",
+            "@expo/vector-icons"
+          ]
+        },
+        {
+          "name": "time-presets",
+          "description": "Quick select buttons for 15, 30, 60 minute timers",
+          "libraries": [
+            "@expo/vector-icons",
+            "expo-haptics"
+          ]
+        },
+        {
+          "name": "custom-time",
+          "description": "Custom time picker for precise timer duration setting",
+          "libraries": [
+            "@expo/vector-icons"
+          ]
+        },
+        {
+          "name": "fade-out",
+          "description": "Toggle and slider for fade-out duration before timer ends",
+          "libraries": [
+            "@expo/vector-icons",
+            "react-native-gesture-handler"
+          ]
+        },
+        {
+          "name": "timer-control",
+          "description": "Start, pause, reset timer with animated state transitions",
+          "libraries": [
+            "react-native-reanimated",
+            "@expo/vector-icons",
+            "expo-haptics"
+          ]
+        }
+      ],
+      "layout": "Large circular timer display, preset buttons, custom controls, fade-out settings below"
+    },
+    {
+      "name": "Favorites",
+      "file": "src/screens/Favorites.js",
+      "purpose": "Quick access to favorite sounds and saved mixes",
+      "features": [
+        {
+          "name": "favorites-tabs",
+          "description": "Segmented control to switch between favorite sounds and mixes",
+          "libraries": [
+            "@expo/vector-icons"
+          ]
+        },
+        {
+          "name": "favorite-sounds",
+          "description": "Grid of favorited individual sounds with quick play",
+          "libraries": [
+            "@expo/vector-icons",
+            "react-native-gesture-handler"
+          ]
+        },
+        {
+          "name": "saved-mixes",
+          "description": "List of saved sound mixes with play and edit options",
+          "libraries": [
+            "@expo/vector-icons",
+            "date-fns"
+          ]
+        },
+        {
+          "name": "quick-play",
+          "description": "One-tap play for any favorite or mix",
+          "libraries": [
+            "expo-haptics",
+            "@expo/vector-icons"
+          ]
+        },
+        {
+          "name": "empty-state",
+          "description": "Beautiful empty state with prompt to add favorites",
+          "libraries": [
+            "@expo/vector-icons",
+            "expo-linear-gradient"
+          ]
+        }
+      ],
+      "layout": "Segmented tabs at top, grid or list based on selection, gradient empty state"
+    },
+    {
+      "name": "Settings",
+      "file": "src/screens/Settings.js",
+      "purpose": "Configure app preferences and view usage statistics",
+      "features": [
+        {
+          "name": "volume-settings",
+          "description": "Master volume control and fade-out duration preferences",
+          "libraries": [
+            "@expo/vector-icons",
+            "react-native-gesture-handler"
+          ]
+        },
+        {
+          "name": "timer-defaults",
+          "description": "Set default timer duration for quick starts",
+          "libraries": [
+            "@expo/vector-icons"
+          ]
+        },
+        {
+          "name": "session-stats",
+          "description": "Display total sessions and hours slept with charts",
+          "libraries": [
+            "react-native-svg",
+            "@expo/vector-icons",
+            "date-fns"
+          ]
+        },
+        {
+          "name": "theme-toggle",
+          "description": "Switch between dark blue and purple gradient variants",
+          "libraries": [
+            "@expo/vector-icons",
+            "expo-linear-gradient"
+          ]
+        },
+        {
+          "name": "data-management",
+          "description": "Clear history and reset app data options",
+          "libraries": [
+            "@react-native-async-storage/async-storage",
+            "@expo/vector-icons"
+          ]
+        }
+      ],
+      "layout": "Grouped settings sections with headers, stats cards, action buttons at bottom"
+    },
+    {
+      "name": "NowPlaying",
+      "file": "src/screens/NowPlaying.js",
+      "purpose": "Full-screen playback view with visualizer and controls",
+      "features": [
+        {
+          "name": "audio-visualizer",
+          "description": "Animated wave visualization synced to playing sounds",
+          "libraries": [
+            "react-native-svg",
+            "react-native-reanimated",
+            "@expo/vector-icons"
+          ]
+        },
+        {
+          "name": "playback-controls",
+          "description": "Large play/pause button with volume and timer shortcuts",
+          "libraries": [
+            "@expo/vector-icons",
+            "expo-haptics"
+          ]
+        },
+        {
+          "name": "sound-badges",
+          "description": "Floating badges showing currently playing sounds with tap to adjust",
+          "libraries": [
+            "@expo/vector-icons",
+            "react-native-gesture-handler"
+          ]
+        },
+        {
+          "name": "blur-background",
+          "description": "Blurred gradient background with dynamic colors from active sounds",
+          "libraries": [
+            "expo-blur",
+            "expo-linear-gradient"
+          ]
+        },
+        {
+          "name": "timer-display",
+          "description": "Subtle countdown timer display if timer is active",
+          "libraries": [
+            "@expo/vector-icons",
+            "date-fns"
+          ]
+        }
+      ],
+      "layout": "Full-screen blur background, centered visualizer, large controls, floating sound badges"
+    }
+  ],
+  "context": {
+    "file": "src/context/DreamDriftContext.js",
+    "hook": "useDreamDrift",
+    "methods": [
+      "playSound",
+      "pauseSound",
+      "stopAll",
+      "setVolume",
+      "addToMix",
+      "removeFromMix",
+      "saveMix",
+      "deleteMix",
+      "toggleFavorite",
+      "startTimer",
+      "stopTimer",
+      "updateSettings",
+      "logSession"
+    ],
+    "computed": [
+      "activeSounds",
+      "currentMix",
+      "timerRemaining",
+      "totalSessions",
+      "favoriteCount",
+      "isPlaying"
+    ]
+  }
+}

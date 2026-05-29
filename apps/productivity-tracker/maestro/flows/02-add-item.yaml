@@ -1,0 +1,27 @@
+appId: com.iosappfactory.productivitytracker
+---
+- launchApp
+- extendedWaitUntil:
+    visible:
+      text: "Items"
+    timeout: 15000
+- tapOn:
+    id: "add-item"
+- extendedWaitUntil:
+    visible:
+      text: "Add Item"
+    timeout: 5000
+- tapOn:
+    id: "input-name"
+- inputText: "Test"
+- tapOn:
+    id: "input-value"
+- inputText: "1"
+- tapOn:
+    id: "save-item"
+- extendedWaitUntil:
+    visible:
+      text: "Items"
+    timeout: 5000
+- assertVisible:
+    text: "Test"

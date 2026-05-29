@@ -1,0 +1,15 @@
+appId: com.iosappfactory.healthanalyzer
+---
+- launchApp
+- extendedWaitUntil:
+    visible:
+      text: "Overview"
+    timeout: 15000
+- tapOn:
+    text: "Settings"
+- extendedWaitUntil:
+    visible:
+      text: "Settings"
+    timeout: 5000
+- assertVisible:
+    text: "Settings"

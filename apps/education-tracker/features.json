@@ -1,0 +1,11 @@
+{
+  "name": "education-tracker",
+  "description": "education tracker app with gamified focus",
+  "features": [
+    "calendar",
+    "day-entry",
+    "stats",
+    "settings"
+  ],
+  "architecture": "tracker"
+}

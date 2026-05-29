@@ -1,0 +1,11 @@
+appId: com.iosappfactory.artexplorer
+---
+- launchApp
+- extendedWaitUntil:
+    visible:
+      text: "Browse"
+    timeout: 15000
+- assertVisible:
+    text: "Browse"
+- assertVisible:
+    id: "search-input"

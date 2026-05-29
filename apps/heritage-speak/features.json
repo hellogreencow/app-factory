@@ -1,0 +1,11 @@
+{
+  "name": "HeritageSpeak",
+  "description": "Explore and share family stories in your native languages with interactive translations.",
+  "features": [
+    "browse",
+    "item-detail",
+    "bookmarks",
+    "settings"
+  ],
+  "architecture": "reference"
+}

@@ -1,0 +1,15 @@
+appId: com.iosappfactory.educationtracker
+---
+- launchApp
+- extendedWaitUntil:
+    visible:
+      text: "Calendar"
+    timeout: 15000
+- tapOn:
+    text: "Settings"
+- extendedWaitUntil:
+    visible:
+      text: "Settings"
+    timeout: 5000
+- assertVisible:
+    text: "Settings"

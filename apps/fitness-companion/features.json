@@ -1,0 +1,11 @@
+{
+  "name": "fitness-companion",
+  "description": "fitness companion app with dark-mode focus",
+  "features": [
+    "overview",
+    "add-entry",
+    "history",
+    "settings"
+  ],
+  "architecture": "dashboard"
+}

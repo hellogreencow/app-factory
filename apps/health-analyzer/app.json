@@ -1,0 +1,16 @@
+{
+  "expo": {
+    "name": "health-analyzer",
+    "slug": "health-analyzer",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "userInterfaceStyle": "light",
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.iosappfactory.healthanalyzer"
+    },
+    "plugins": [
+      "expo-asset"
+    ]
+  }
+}

@@ -1,0 +1,202 @@
+{
+  "name": "SnapDebt",
+  "description": "A high-stakes social debt tracker using photo evidence and geolocation to ensure you get paid back.",
+  "style": {
+    "theme": "dark",
+    "backgroundColor": "#000000",
+    "cardColor": "#1A1A1A",
+    "textColor": "#FFFFFF",
+    "accentColor": "#39FF14",
+    "secondaryAccent": "#FF007F",
+    "borderRadius": 16
+  },
+  "navigation": {
+    "type": "bottom-tabs",
+    "tabs": [
+      {
+        "name": "Ledger",
+        "icon": "Ionicons/receipt-outline",
+        "screen": "Dashboard"
+      },
+      {
+        "name": "Snap",
+        "icon": "Ionicons/camera",
+        "screen": "CreateDebt"
+      },
+      {
+        "name": "Map",
+        "icon": "Ionicons/map-outline",
+        "screen": "DebtMap"
+      },
+      {
+        "name": "Profile",
+        "icon": "Ionicons/person-outline",
+        "screen": "Profile"
+      }
+    ]
+  },
+  "dataModel": {
+    "entities": [
+      {
+        "name": "Debt",
+        "storageKey": "@snapdebt_items",
+        "fields": [
+          {
+            "name": "id",
+            "type": "string"
+          },
+          {
+            "name": "amount",
+            "type": "number"
+          },
+          {
+            "name": "debtorName",
+            "type": "string"
+          },
+          {
+            "name": "description",
+            "type": "string"
+          },
+          {
+            "name": "photoUri",
+            "type": "string"
+          },
+          {
+            "name": "location",
+            "type": "object"
+          },
+          {
+            "name": "createdAt",
+            "type": "string"
+          },
+          {
+            "name": "status",
+            "type": "string"
+          }
+        ]
+      }
+    ]
+  },
+  "screens": [
+    {
+      "name": "Dashboard",
+      "file": "src/screens/Dashboard.js",
+      "purpose": "Overview of total money owed and recent activity with animated progress rings.",
+      "features": [
+        {
+          "name": "debt-list",
+          "description": "Swipeable list of active debts with neon status indicators.",
+          "libraries": [
+            "react-native-reanimated",
+            "react-native-gesture-handler",
+            "@expo/vector-icons"
+          ]
+        },
+        {
+          "name": "stats-summary",
+          "description": "Visual breakdown of total receivables using SVG charts.",
+          "libraries": [
+            "react-native-svg",
+            "expo-linear-gradient"
+          ]
+        }
+      ],
+      "layout": "Vertical scroll view with gradient header and sticky summary card."
+    },
+    {
+      "name": "CreateDebt",
+      "file": "src/screens/CreateDebt.js",
+      "purpose": "Capture evidence and log new debt entries instantly.",
+      "features": [
+        {
+          "name": "camera-capture",
+          "description": "Take high-quality proof photos of receipts or items lent.",
+          "libraries": [
+            "expo-camera",
+            "expo-image-picker"
+          ]
+        },
+        {
+          "name": "geo-tagging",
+          "description": "Automatically attach current location to the debt record.",
+          "libraries": [
+            "expo-location"
+          ]
+        }
+      ],
+      "layout": "Step-by-step form with full-screen camera overlay and haptic feedback buttons."
+    },
+    {
+      "name": "DebtDetails",
+      "file": "src/screens/DebtDetails.js",
+      "purpose": "Deep dive into a specific debt with proof viewer and nudge actions.",
+      "features": [
+        {
+          "name": "nudge-trigger",
+          "description": "Send aggressive reminders or share debt details to social apps.",
+          "libraries": [
+            "expo-sharing",
+            "expo-haptics",
+            "expo-clipboard"
+          ]
+        },
+        {
+          "name": "proof-gallery",
+          "description": "Zoomable image viewer for the captured debt evidence.",
+          "libraries": [
+            "expo-blur",
+            "react-native-reanimated"
+          ]
+        }
+      ],
+      "layout": "Parallax image header with glassmorphism action cards below."
+    },
+    {
+      "name": "DebtMap",
+      "file": "src/screens/DebtMap.js",
+      "purpose": "Visualize where your money is scattered across the city.",
+      "features": [
+        {
+          "name": "debt-pins",
+          "description": "Interactive map markers showing debt amounts at specific locations.",
+          "libraries": [
+            "react-native-maps",
+            "@expo/vector-icons"
+          ]
+        }
+      ],
+      "layout": "Full-screen interactive map with custom neon-styled map tiles and callouts."
+    },
+    {
+      "name": "Profile",
+      "file": "src/screens/Profile.js",
+      "purpose": "Manage user settings, export data, and view personal credibility score.",
+      "features": [
+        {
+          "name": "data-export",
+          "description": "Export your entire ledger as a structured file.",
+          "libraries": [
+            "expo-file-system",
+            "expo-sharing"
+          ]
+        }
+      ],
+      "layout": "Clean list layout with toggle switches and account statistics."
+    }
+  ],
+  "context": {
+    "file": "src/context/AppContext.js",
+    "hook": "useAppData",
+    "methods": [
+      "addDebt",
+      "resolveDebt",
+      "deleteDebt",
+      "updatePhoto"
+    ],
+    "computed": [
+      "totalOwed",
+      "activeDebtsCount",
+      "debtsByLocation"
+    ]
+  }
+}

@@ -1,0 +1,15 @@
+appId: com.iosappfactory.scifireader
+---
+- launchApp
+- extendedWaitUntil:
+    visible:
+      text: "Items"
+    timeout: 15000
+- tapOn:
+    id: "item-1"
+- extendedWaitUntil:
+    visible:
+      text: "Detail"
+    timeout: 5000
+- assertVisible:
+    text: "Detail"

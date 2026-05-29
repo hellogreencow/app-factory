@@ -17,6 +17,7 @@ require('./lib/env').loadEnv();
 
 const fs = require('fs');
 const path = require('path');
+const { execSync } = require('child_process');
 const { chat } = require('./lib/llm');
 const { runCodeAgent } = require('./code-agent');
 
@@ -489,6 +490,49 @@ Output ONLY the JSON array. No markdown.`;
   }
 }
 
+function snapshot(appDir, tag) {
+  const snapDir = path.join(appDir, '.snapshots', tag);
+  const srcDir = path.join(appDir, 'src');
+  const appJs = path.join(appDir, 'App.js');
+  try {
+    execSync(`rm -rf "${snapDir}" && mkdir -p "${snapDir}"`);
+    if (fs.existsSync(srcDir)) execSync(`cp -R "${srcDir}" "${snapDir}/src"`);
+    if (fs.existsSync(appJs)) execSync(`cp "${appJs}" "${snapDir}/App.js"`);
+  } catch (e) {
+    log(`Snapshot ${tag} failed: ${e.message}`);
+  }
+}
+
+function restore(appDir, tag) {
+  const snapDir = path.join(appDir, '.snapshots', tag);
+  const srcDir = path.join(appDir, 'src');
+  const appJs = path.join(appDir, 'App.js');
+  try {
+    if (fs.existsSync(path.join(snapDir, 'src'))) {
+      execSync(`rm -rf "${srcDir}" && cp -R "${snapDir}/src" "${srcDir}"`);
+    }
+    if (fs.existsSync(path.join(snapDir, 'App.js'))) {
+      execSync(`cp "${snapDir}/App.js" "${appJs}"`);
+    }
+    log(`Restored snapshot: ${tag}`);
+  } catch (e) {
+    log(`Restore ${tag} failed: ${e.message}`);
+  }
+}
+
+function bundleCheck(appDir) {
+  try {
+    execSync(`npx expo export --dump-sourcemap --output-dir "${appDir}/.bundle-check" 2>&1`, {
+      cwd: appDir, timeout: 30_000, stdio: 'pipe',
+    });
+    execSync(`rm -rf "${appDir}/.bundle-check"`);
+    return true;
+  } catch {
+    execSync(`rm -rf "${appDir}/.bundle-check"`, { stdio: 'ignore' }).toString?.();
+    return false;
+  }
+}
+
 async function run(appDir, idea, opts = {}) {
   const arch = idea.architecture || 'generic';
   const features = ARCH_FEATURE_SPECS[arch] || ARCH_FEATURE_SPECS.generic;
@@ -499,12 +543,17 @@ async function run(appDir, idea, opts = {}) {
 
   const results = [];
   const t0 = Date.now();
+  let lastGoodSnap = 'base';
+
+  snapshot(appDir, 'base');
 
   for (let i = 0; i < features.length; i++) {
     const feat = features[i];
     const label = `[${i + 1}/${features.length}] ${feat.name}`;
     log(`${label}: starting...`);
     onProgress(`Building feature: ${feat.name}`);
+
+    snapshot(appDir, `pre-${feat.name}`);
 
     const r = await runCodeAgent({
       appDir,
@@ -514,6 +563,18 @@ async function run(appDir, idea, opts = {}) {
       maxSteps: 12,
       onProgress: (msg) => log(`${label}: ${msg}`),
     });
+
+    if (r.ok && r.filesChanged && r.filesChanged.length > 0) {
+      const compiles = bundleCheck(appDir);
+      if (!compiles) {
+        log(`${label}: broke the bundle — rolling back`);
+        restore(appDir, `pre-${feat.name}`);
+        results.push({ name: feat.name, ok: false, filesChanged: [], summary: '', error: 'Broke bundle, reverted' });
+        continue;
+      }
+      lastGoodSnap = `post-${feat.name}`;
+      snapshot(appDir, lastGoodSnap);
+    }
 
     results.push({
       name: feat.name,
@@ -525,6 +586,7 @@ async function run(appDir, idea, opts = {}) {
 
     if (!r.ok) {
       log(`${label}: FAILED — ${r.error || 'unknown error'}`);
+      restore(appDir, `pre-${feat.name}`);
     } else {
       log(`${label}: done (${r.filesChanged.length} files changed)`);
     }
@@ -542,6 +604,8 @@ async function run(appDir, idea, opts = {}) {
       log(`${label}: starting...`);
       onProgress(`Building: ${feat.name}`);
 
+      snapshot(appDir, `pre-custom-${feat.name}`);
+
       const r = await runCodeAgent({
         appDir,
         task: feat.task,
@@ -551,6 +615,15 @@ async function run(appDir, idea, opts = {}) {
         onProgress: (msg) => log(`${label}: ${msg}`),
       });
 
+      if (r.ok && r.filesChanged && r.filesChanged.length > 0) {
+        if (!bundleCheck(appDir)) {
+          log(`${label}: broke the bundle — rolling back`);
+          restore(appDir, `pre-custom-${feat.name}`);
+          results.push({ name: `custom:${feat.name}`, ok: false, filesChanged: [], summary: '', error: 'Broke bundle, reverted' });
+          continue;
+        }
+      }
+
       results.push({
         name: `custom:${feat.name}`,
         ok: r.ok,
@@ -559,10 +632,18 @@ async function run(appDir, idea, opts = {}) {
         error: r.ok ? null : r.error,
       });
 
-      if (!r.ok) log(`${label}: FAILED — ${r.error}`);
-      else log(`${label}: done (${r.filesChanged.length} files)`);
+      if (!r.ok) {
+        log(`${label}: FAILED — ${r.error}`);
+        restore(appDir, `pre-custom-${feat.name}`);
+      } else {
+        log(`${label}: done (${r.filesChanged.length} files)`);
+      }
     }
   }
+
+  // Clean up snapshots
+  const snapDir = path.join(appDir, '.snapshots');
+  try { execSync(`rm -rf "${snapDir}"`); } catch {}
 
   const dur = ((Date.now() - t0) / 1000).toFixed(1);
   const passed = results.filter(r => r.ok).length;

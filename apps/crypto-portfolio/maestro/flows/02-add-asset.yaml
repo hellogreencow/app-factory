@@ -1,0 +1,28 @@
+# Add asset: fill form, save, verify back to portfolio
+appId: com.iosappfactory.cryptoportfolio
+---
+- launchApp
+- extendedWaitUntil:
+    visible:
+      text: "Portfolio"
+    timeout: 20000
+- tapOn:
+    id: "add-asset"
+- extendedWaitUntil:
+    visible:
+      text: "Add Asset"
+    timeout: 10000
+- tapOn:
+    id: "input-symbol"
+- inputText: "SOL"
+- tapOn:
+    id: "input-amount"
+- inputText: "10"
+- tapOn:
+    id: "save-asset"
+- extendedWaitUntil:
+    visible:
+      text: "Portfolio"
+    timeout: 10000
+- assertVisible:
+    text: "SOL"

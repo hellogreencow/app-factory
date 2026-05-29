@@ -1,0 +1,32 @@
+{
+  "expo": {
+    "name": "Pipeline Test 01",
+    "slug": "pipeline-test-01",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "userInterfaceStyle": "automatic",
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.iosappfactory.pipelinetest01",
+      "infoPlist": {
+        "NSLocationWhenInUseUsageDescription": "This app uses your location to show nearby content.",
+        "NSCameraUsageDescription": "This app uses the camera to capture photos.",
+        "ITSAppUsesNonExemptEncryption": false
+      }
+    },
+    "plugins": [
+      "expo-asset",
+      "expo-location",
+      "expo-camera",
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "Allow access to select photos."
+        }
+      ],
+      "expo-font",
+      "expo-router"
+    ],
+    "newArchEnabled": true
+  }
+}

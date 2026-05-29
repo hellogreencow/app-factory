@@ -1,0 +1,11 @@
+{
+  "name": "Amber",
+  "description": "Three golden moments captured in a warm evening ritual",
+  "features": [
+    "calendar",
+    "day-entry",
+    "stats",
+    "settings"
+  ],
+  "architecture": "tracker"
+}
