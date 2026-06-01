@@ -127,14 +127,14 @@ export default function IncidentMap() {
     }
   };
 
-  const filteredIncidents = incidents.filter((incident) => {
+  const filteredIncidents = (incidents || []).filter((incident) => {
     if (!filters.showIncidents) return false;
     if (!filters.severities[incident.severity]) return false;
     if (!filters.statuses[incident.status]) return false;
     return incident.location && incident.location.latitude && incident.location.longitude;
   });
 
-  const filteredTeamMembers = teamMembers.filter((member) => {
+  const filteredTeamMembers = (teamMembers || []).filter((member) => {
     if (!filters.showTeam) return false;
     return member.location && member.location.latitude && member.location.longitude;
   });

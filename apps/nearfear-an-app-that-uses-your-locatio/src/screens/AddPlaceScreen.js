@@ -114,7 +114,7 @@ export default function AddPlaceScreen() {
 
         <Text style={[styles.label, { color: theme.textColor }]}>Fear Tags:</Text>
         <View style={styles.tagsContainer}>
-          {fearTagsList.map((tag) => (
+          {(fearTagsList || []).map((tag) => (
             <Button
               key={tag}
               title={tag}

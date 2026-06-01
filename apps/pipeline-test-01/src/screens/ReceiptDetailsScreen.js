@@ -107,7 +107,7 @@ const ReceiptDetailsScreen = ({ route, navigation }) => {
 
       <View style={[styles.card, { backgroundColor: theme.cardColor }]}>
         <Text style={[styles.sectionTitle, { color: theme.textColor }]}>Participants</Text>
-        {receipt.participants.map((participant, index) => (
+        {(receipt.participants || []).map((participant, index) => (
           <View key={index} style={styles.participantRow}>
             <Text style={[styles.participantName, { color: theme.textColor }]}>{participant.name}</Text>
             <Text style={[styles.participantOwes, { color: theme.accentColor }]}>
