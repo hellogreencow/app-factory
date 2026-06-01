@@ -82,12 +82,34 @@ function analyzeScreenFile(filePath, code) {
     issues.push({ severity: 'info', message: 'No interactive elements — screen may be read-only' });
   }
 
-  // Check for common crash patterns
-  if (hasScrollView && !/<FlatList|<SectionList/.test(code)) {
-    // ScrollView without nested content is fine, but check for map without guard
-    const unguardedMap = /\b(\w+)\.map\s*\(/.test(code) && !/(\w+)\s*\?\?\s*\[\]/.test(code) && !/(\w+)\s*\|\|\s*\[\]/.test(code);
-    if (unguardedMap) {
-      issues.push({ severity: 'critical', message: 'Unguarded .map() call — will crash on null/undefined' });
+  // Check for common crash patterns — unguarded .map() calls
+  // Only flag .map() on object properties (data.items.map()), not standalone vars
+  // Standalone vars are either state (useState([])) or locally declared — safe.
+  // Also check for any .map() that follows `&& .length > 0` guard on the previous line.
+  const mapPattern = /\b(\w+\.\w+(?:\.\w+)*)\.map\s*\(/g;
+  let mapMatch;
+  while ((mapMatch = mapPattern.exec(code)) !== null) {
+    const fullPath = mapMatch[1]; // e.g., "receipt.participants"
+    const pos = mapMatch.index;
+    // Check the ~100 chars before the match for a guard (|| [], ?? [], ?.)
+    const before = code.slice(Math.max(0, pos - 120), pos);
+    const isGuarded = /\?\s*\[\]|\?\?/.test(before) || /\?\s*\./.test(before);
+    // Check if previous line has a .length > 0 guard on the same object
+    // e.g.: {fullPath.length > 0 ? ( or {fullPath && fullPath.length > 0 &&
+    const prevNewline = code.lastIndexOf('\n', pos - 1);
+    if (prevNewline >= 0) {
+      const prevPrevNewline = code.lastIndexOf('\n', prevNewline - 1);
+      const prevLine = code.slice(Math.max(0, prevPrevNewline), prevNewline).trim();
+      const hasLengthGuard = new RegExp(`${fullPath}\\.length\\s*>`).test(prevLine)
+        || new RegExp(`${fullPath}\\s*&&\\s*${fullPath}\\.length`).test(prevLine);
+      if (hasLengthGuard) continue;
+    }
+    // Check if same line has inline guard: {(arr || []).map( or arr?.map(
+    const lineStart = code.lastIndexOf('\n', pos) + 1;
+    const lineBefore = code.slice(lineStart, pos);
+    const isLineGuarded = /\(\s*\w+(?:\.\w+)*\s*(?:\|\||\?\?)\s*\[\]/.test(lineBefore) || /\?\./.test(lineBefore);
+    if (!isGuarded && !isLineGuarded) {
+      issues.push({ severity: 'critical', message: `Unguarded .map() call on "${fullPath}" — will crash if property is null/undefined` });
     }
   }
 
