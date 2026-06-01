@@ -85,6 +85,8 @@ All installed via `npx expo install` during scaffold:
 - Metro `CI=true` env var disables watch mode — explicitly `delete env.CI`
 - App Store Connect API does not support creating new apps via REST
 - Apple allows max 3 distribution certificates — NEVER auto-revoke without user confirmation
+- Unguarded `.map()` on property access (e.g., `receipt.participants.map()`) crashes on null/undefined — always guard with `(obj || [])` or `obj?.length > 0` condition
+- Functional analyzer (`orchestrator/functional-analyzer.js`) checks ALL files for unguarded `.map()` on property chains — run `node orchestrator/functional-analyzer.js --all --no-llm` to score all apps
 
 ## Fixes Applied
 
